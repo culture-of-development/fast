@@ -1,0 +1,7 @@
+# build artifacts
+bin/
+obj/
+
+# vs code
+launch.json
+tasks.json
