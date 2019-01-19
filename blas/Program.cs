@@ -18,12 +18,16 @@ namespace blas
             var a = DataGenerator.Matrix(size, size+bumper);
             var b = DataGenerator.Matrix(size+bumper, size);
             var mm = new MatrixMultiply();
-            //EnsureCorrectness(a, b, mm.Naive, mm.TransposeSumUnsafe);
+            if (size <= 20)
+            {
+                EnsureCorrectness(a, b, mm.Naive, mm.StridingSum);
+            }
             TimeIt("MM - Naive", () => mm.Naive(a, b));
             TimeIt("MM - NaiveSum", () => mm.NaiveSum(a, b));
             TimeIt("MM - NaiveSumUnsafe", () => mm.NaiveSumUnsafe(a, b));
             TimeIt("MM - TransposeSum", () => mm.TransposeSum(a, b));
             TimeIt("MM - TransposeSumUnsafe", () => mm.TransposeSumUnsafe(a, b));
+            TimeIt("MM - StridingSum", () => mm.StridingSum(a, b));
         }
 
         static void EnsureCorrectness<T>(T[,] a, T[,] b, Func<T[,], T[,], T[,]> baseline, Func<T[,], T[,], T[,]> hypothesis)

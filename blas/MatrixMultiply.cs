@@ -131,5 +131,36 @@ namespace blas
             }
             return result;
         }
+
+        public float[,] StridingSum(float[,] a, float[,] b)
+        {
+            const int stride = 64 / sizeof(float);
+
+            var x = a.GetLength(0);
+            var z = a.GetLength(1);
+            var y = b.GetLength(1);
+
+            float[,] result = new float[x, y];
+
+            for(int i = 0; i < x; i += stride)
+            for(int j = 0; j < y; j += stride)
+            for(int k = 0; k < z; k += stride)
+            {
+                int max_i = i+stride;
+                int max_j = j+stride;
+                int max_k = k+stride;
+                for (int i2 = i; i2 < max_i; i2++)
+                for (int j2 = j; j2 < max_j; j2++)
+                {
+                    float sum = 0f;
+                    for (int k2 = 0; k2 < max_k; k2++)
+                    {
+                        sum += a[i2, k2] * b[k2, j2];
+                    }
+                    result[i2,j2] = sum;
+                }
+            }
+            return result;
+        }
     }
 }
