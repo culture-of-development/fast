@@ -11,7 +11,9 @@ namespace blas
             var result = new float[rows, cols];
             for(int r = 0; r < rows; r++)
             for(int c = 0; c < cols; c++)
+            {
                 result[r, c] = (float)random.NextDouble();
+            }
             return result;
         }
     }
