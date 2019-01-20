@@ -13,21 +13,22 @@ namespace blas
 
         static void DoMatrix()
         {
-            int size = 512;
+            int size = 1024;
             int bumper = 0;
             var a = DataGenerator.Matrix(size, size+bumper);
             var b = DataGenerator.Matrix(size+bumper, size);
             var mm = new MatrixMultiply();
             if (size <= 20)
             {
-                EnsureCorrectness(a, b, mm.Naive, mm.StridingSum);
+                EnsureCorrectness(a, b, mm.Naive, mm.StridingSumUnsafe);
             }
-            TimeIt("MM - Naive", () => mm.Naive(a, b));
-            TimeIt("MM - NaiveSum", () => mm.NaiveSum(a, b));
-            TimeIt("MM - NaiveSumUnsafe", () => mm.NaiveSumUnsafe(a, b));
-            TimeIt("MM - TransposeSum", () => mm.TransposeSum(a, b));
-            TimeIt("MM - TransposeSumUnsafe", () => mm.TransposeSumUnsafe(a, b));
-            TimeIt("MM - StridingSum", () => mm.StridingSum(a, b));
+            TimeIt("MM - " + nameof(mm.Naive), () => mm.Naive(a, b));
+            TimeIt("MM - " + nameof(mm.NaiveSum), () => mm.NaiveSum(a, b));
+            TimeIt("MM - " + nameof(mm.NaiveSumUnsafe), () => mm.NaiveSumUnsafe(a, b));
+            TimeIt("MM - " + nameof(mm.TransposeSum), () => mm.TransposeSum(a, b));
+            TimeIt("MM - " + nameof(mm.TransposeSumUnsafe), () => mm.TransposeSumUnsafe(a, b));
+            TimeIt("MM - " + nameof(mm.StridingSum), () => mm.StridingSum(a, b));
+            TimeIt("MM - " + nameof(mm.StridingSumUnsafe), () => mm.StridingSumUnsafe(a, b));
         }
 
         static void EnsureCorrectness<T>(T[,] a, T[,] b, Func<T[,], T[,], T[,]> baseline, Func<T[,], T[,], T[,]> hypothesis)
