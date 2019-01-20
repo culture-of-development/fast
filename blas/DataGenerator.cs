@@ -1,6 +1,6 @@
 using System;
 
-namespace blas
+namespace fast.blas
 {
     public static class DataGenerator
     {

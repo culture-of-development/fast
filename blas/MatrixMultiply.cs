@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace blas
+namespace fast.blas
 {
     public class MatrixMultiply
     {
@@ -12,6 +12,22 @@ namespace blas
             var y = b.GetLength(1);
 
             float[,] result = new float[x, y];
+            for(int i = 0; i < x; i++)
+            for(int j = 0; j < y; j++)
+            for(int k = 0; k < z; k++)
+            {
+                result[i,j] += a[i, k] * b[k, j];
+            }
+            return result;
+        }
+
+        public FloatMatrix2d NaiveMat2d(FloatMatrix2d a, FloatMatrix2d b)
+        {
+            var x = a.rows;
+            var z = a.cols;
+            var y = b.cols;
+
+            var result = new FloatMatrix2d(x, y);
             for(int i = 0; i < x; i++)
             for(int j = 0; j < y; j++)
             for(int k = 0; k < z; k++)
