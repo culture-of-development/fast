@@ -1,4 +1,6 @@
 using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace fast.blas
 {
@@ -29,16 +31,27 @@ namespace fast.blas
         {
             get 
             {
-                if (row >= this.rows || row < 0) throw new ArgumentOutOfRangeException("row");
-                if (col >= this.cols || col < 0) throw new ArgumentOutOfRangeException("col");
-                return this.m[row*this.cols+col]; 
+                //if (row >= this.rows || row < 0) throw new ArgumentOutOfRangeException("row");
+                //if (col >= this.cols || col < 0) throw new ArgumentOutOfRangeException("col");
+                return this.m[this.GetIndex(row, col)]; 
             }
             set 
             {
-                if (row >= this.rows || row < 0) throw new ArgumentOutOfRangeException("row");
-                if (col >= this.cols || col < 0) throw new ArgumentOutOfRangeException("col");
-                this.m[row*this.cols+col] = value; 
+                //if (row >= this.rows || row < 0) throw new ArgumentOutOfRangeException("row");
+                //if (col >= this.cols || col < 0) throw new ArgumentOutOfRangeException("col");
+                this.m[this.GetIndex(row, col)] = value; 
             }
+        }
+
+        public Vector<float> Vector(int row, int col)
+        {
+            return new Vector<float>(this.m, this.GetIndex(row, col));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetIndex(int row, int col)
+        {
+            return row * this.cols + col;
         }
     }
 }

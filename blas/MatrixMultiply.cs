@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace fast.blas
@@ -115,6 +116,66 @@ namespace fast.blas
             for(int j = 0; j < y; j++)
             {
                 result[j, i] = m[i, j];
+            }
+            return result;
+        }
+
+        public FloatMatrix2d TransposeSumMat2d(FloatMatrix2d a, FloatMatrix2d b)
+        {
+            var bT = MatrixTransposeMat2d(b);
+
+            var x = a.rows;
+            var z = a.cols;
+            var y = b.cols;
+
+            FloatMatrix2d result = new FloatMatrix2d(x, y);
+            for(int i = 0; i < x; i++)
+            for(int j = 0; j < y; j++)
+            {
+                float sum = 0f;
+                for(int k = 0; k < z; k++)
+                {
+                    sum += a[i, k] * bT[j, k];
+                }
+                result[i,j] = sum;
+            }
+            return result;
+        }
+
+        public FloatMatrix2d MatrixTransposeMat2d(FloatMatrix2d m)
+        {
+            var x = m.rows;
+            var y = m.cols;
+            var result = new FloatMatrix2d(x, y);
+            for(int i = 0; i < x; i++)
+            for(int j = 0; j < y; j++)
+            {
+                result[j, i] = m[i, j];
+            }
+            return result;
+        }
+
+        public FloatMatrix2d TransposeSumVectorMat2d(FloatMatrix2d a, FloatMatrix2d b)
+        {
+            var bT = MatrixTransposeMat2d(b);
+
+            var x = a.rows;
+            var z = a.cols;
+            var y = b.cols;
+
+            FloatMatrix2d result = new FloatMatrix2d(x, y);
+            for(int i = 0; i < x; i++)
+            for(int j = 0; j < y; j++)
+            {
+                float sum = 0f;
+                for(int k = 0; k < z; k += Vector<float>.Count)
+                {
+                    var am = a.Vector(i, k);
+                    var bm = bT.Vector(j, k);
+                    //sum += a[i, k] * bT[j, k];
+                    sum += Vector.Dot<float>(am, bm);
+                }
+                result[i,j] = sum;
             }
             return result;
         }

@@ -13,7 +13,7 @@ namespace fast.blas
 
         static void DoMatrix()
         {
-            int size = 512;
+            int size = true ? 512 : 16;
             int bumper = 0;
             var a = DataGenerator.Matrix(size, size+bumper);
             var am = new FloatMatrix2d(a);
@@ -23,21 +23,18 @@ namespace fast.blas
             if (size <= 20)
             {
                 //EnsureCorrectness(a, b, mm.Naive, mm.StridingSumUnsafe);
-                for(int i = 0; i < a.GetLength(0); i++)
-                for(int j = 0; j < a.GetLength(1); j++)
-                {
-                    Console.WriteLine(i + ", " + j + " --- " + b[i, j] + " --- " + bm[i, j]);
-                }
-                EnsureCorrectness(a, b, mm.Naive, am, bm, mm.NaiveMat2d);
+                EnsureCorrectness(a, b, mm.TransposeSum, am, bm, mm.TransposeSumVectorMat2d);
             }
             TimeIt("MM - " + nameof(mm.Naive), () => mm.Naive(a, b));
             TimeIt("MM - " + nameof(mm.NaiveMat2d), () => mm.NaiveMat2d(am, bm));
-            // TimeIt("MM - " + nameof(mm.NaiveSum), () => mm.NaiveSum(a, b));
-            // TimeIt("MM - " + nameof(mm.NaiveSumUnsafe), () => mm.NaiveSumUnsafe(a, b));
-            // TimeIt("MM - " + nameof(mm.TransposeSum), () => mm.TransposeSum(a, b));
-            // TimeIt("MM - " + nameof(mm.TransposeSumUnsafe), () => mm.TransposeSumUnsafe(a, b));
-            // TimeIt("MM - " + nameof(mm.StridingSum), () => mm.StridingSum(a, b));
-            // TimeIt("MM - " + nameof(mm.StridingSumUnsafe), () => mm.StridingSumUnsafe(a, b));
+            TimeIt("MM - " + nameof(mm.NaiveSum), () => mm.NaiveSum(a, b));
+            TimeIt("MM - " + nameof(mm.NaiveSumUnsafe), () => mm.NaiveSumUnsafe(a, b));
+            TimeIt("MM - " + nameof(mm.TransposeSum), () => mm.TransposeSum(a, b));
+            TimeIt("MM - " + nameof(mm.TransposeSumMat2d), () => mm.TransposeSumMat2d(am, bm));
+            TimeIt("MM - " + nameof(mm.TransposeSumVectorMat2d), () => mm.TransposeSumVectorMat2d(am, bm));
+            TimeIt("MM - " + nameof(mm.TransposeSumUnsafe), () => mm.TransposeSumUnsafe(a, b));
+            TimeIt("MM - " + nameof(mm.StridingSum), () => mm.StridingSum(a, b));
+            TimeIt("MM - " + nameof(mm.StridingSumUnsafe), () => mm.StridingSumUnsafe(a, b));
         }
 
         static void EnsureCorrectness<T>(T[,] a, T[,] b, Func<T[,], T[,], T[,]> baseline, Func<T[,], T[,], T[,]> hypothesis)
