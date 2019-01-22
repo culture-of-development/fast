@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace fast.blas
 {
@@ -15,6 +16,7 @@ namespace fast.blas
         {
             int size = true ? 512 : 16;
             Console.WriteLine("Matrix size: " + size);
+            Console.WriteLine("Vector size: " + Vector<float>.Count);
             int bumper = 0;
             var a = DataGenerator.Matrix(size, size+bumper);
             var am = new FloatMatrix2d(a);
@@ -23,8 +25,8 @@ namespace fast.blas
             var mm = new MatrixMultiply();
             if (size <= 20)
             {
-                //EnsureCorrectness(a, b, mm.Naive, mm.StridingSumUnsafe);
-                EnsureCorrectness(a, b, mm.TransposeSum, am, bm, mm.TransposeSumVectorMat2d);
+                EnsureCorrectness(a, b, mm.Naive, mm.StridingSumUnsafe);
+                //EnsureCorrectness(a, b, mm.TransposeSum, am, bm, mm.TransposeSumVectorMat2d);
             }
             TimeIt("MM - " + nameof(mm.Naive), () => mm.Naive(a, b));
             TimeIt("MM - " + nameof(mm.NaiveMat2d), () => mm.NaiveMat2d(am, bm));
@@ -36,6 +38,7 @@ namespace fast.blas
             TimeIt("MM - " + nameof(mm.TransposeSumUnsafe), () => mm.TransposeSumUnsafe(a, b));
             TimeIt("MM - " + nameof(mm.StridingSum), () => mm.StridingSum(a, b));
             TimeIt("MM - " + nameof(mm.StridingSumUnsafe), () => mm.StridingSumUnsafe(a, b));
+            TimeIt("MM - " + nameof(mm.StridingUnrolledUnsafe), () => mm.StridingUnrolledUnsafe(a, b));
         }
 
         static void EnsureCorrectness<T>(T[,] a, T[,] b, Func<T[,], T[,], T[,]> baseline, Func<T[,], T[,], T[,]> hypothesis)

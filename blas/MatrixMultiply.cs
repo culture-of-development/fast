@@ -242,7 +242,45 @@ namespace fast.blas
         {
             // this 64 is hardcoded based on my i7 4980hq cache line size
             const int stride = 64 / sizeof(float);
+            
+            var x = a.GetLength(0);
+            var z = a.GetLength(1);
+            var y = b.GetLength(1);
 
+            float[,] result = new float[x, y];
+
+            fixed(float* af = a)
+            fixed(float* bf = b)
+            for(int i = 0; i < x; i += stride)
+            for(int j = 0; j < y; j += stride)
+            for(int k = 0; k < z; k += stride)
+            {
+                //float* a_head = &af[i*z+k];
+                //float* b_head = &bf[k*y+j];
+                for (int i2 = i, u = i*z+k; i2 < i+stride; i2++, u+=z)
+                for (int j2 = j, t = k*y+j; j2 < j+stride; j2++, t++)
+                {
+                    float sum = 0f;
+                    float* aa = &af[u];
+                    float* bb = &bf[t];
+
+                    float* max_a = aa+stride;
+                    for (; aa < max_a; aa++, bb+=y)
+                    {
+                        sum += *aa * *bb;
+                    }
+                    result[i2,j2] += sum;
+                }
+            }
+            return result;
+        }
+
+        public unsafe float[,] StridingUnrolledUnsafe(float[,] a, float[,] b)
+        {
+            // this 64 is hardcoded based on my i7 4980hq cache line size
+            //const int stride = 64 / sizeof(float);
+            const int stride = 16;
+            
             var x = a.GetLength(0);
             var z = a.GetLength(1);
             var y = b.GetLength(1);
@@ -259,15 +297,18 @@ namespace fast.blas
                 for (int j2 = j; j2 < j+stride; j2++)
                 {
                     float sum = 0f;
+                    float sum2 = 0f;
                     float* aa = &af[i2*z+k];
                     float* bb = &bf[k*y+j2];
-                    for (int k2 = k; k2 < k+stride; k2++)
+
+                    for (int k2 = k; k2 < k+stride; k2+=2)
                     {
                         sum += *aa * *bb;
-                        aa++;
-                        bb += y;
+                        sum2 += *(aa+1) * *(bb+y);
+                        aa += 2;
+                        bb += y*2;
                     }
-                    result[i2,j2] += sum;
+                    result[i2,j2] += sum + sum2;
                 }
             }
             return result;

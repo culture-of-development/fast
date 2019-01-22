@@ -24,7 +24,6 @@ namespace fast.blas
             this.cols = values.GetLength(1);
             this.m = new float[this.rows * this.cols];
             Buffer.BlockCopy(values, 0, this.m, 0, this.m.Length * sizeof(float));
-            
         }
 
         public float this[int row, int col]
