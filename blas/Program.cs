@@ -14,6 +14,7 @@ namespace fast.blas
         static void DoMatrix()
         {
             int size = true ? 512 : 16;
+            Console.WriteLine("Matrix size: " + size);
             int bumper = 0;
             var a = DataGenerator.Matrix(size, size+bumper);
             var am = new FloatMatrix2d(a);
