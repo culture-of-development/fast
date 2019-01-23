@@ -255,21 +255,23 @@ namespace fast.blas
             for(int j = 0; j < y; j += stride)
             for(int k = 0; k < z; k += stride)
             {
-                //float* a_head = &af[i*z+k];
-                //float* b_head = &bf[k*y+j];
-                for (int i2 = i, u = i*z+k; i2 < i+stride; i2++, u+=z)
-                for (int j2 = j, t = k*y+j; j2 < j+stride; j2++, t++)
+                float* a_head = af+i*z+k;
+                for (int i2 = i; i2 < i+stride; i2++, a_head+=z)
                 {
-                    float sum = 0f;
-                    float* aa = &af[u];
-                    float* bb = &bf[t];
-
-                    float* max_a = aa+stride;
-                    for (; aa < max_a; aa++, bb+=y)
+                    float* b_head = bf+k*y+j;
+                    for (int j2 = j; j2 < j+stride; j2++, b_head++)
                     {
-                        sum += *aa * *bb;
+                        float sum = 0f;
+                        float* aa = a_head;
+                        float* bb = b_head;
+
+                        float* max_a = aa+stride;
+                        for (; aa < max_a; aa++, bb+=y)
+                        {
+                            sum += *aa * *bb;
+                        }
+                        result[i2,j2] += sum;
                     }
-                    result[i2,j2] += sum;
                 }
             }
             return result;
