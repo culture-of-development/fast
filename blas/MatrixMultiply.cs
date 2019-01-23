@@ -179,6 +179,45 @@ namespace fast.blas
             return result;
         }
 
+        public FloatMatrix2d TransposeSumStridingVectorMat2d(FloatMatrix2d a, FloatMatrix2d b)
+        {
+            const int stride = 64 / sizeof(float);
+
+            var bT = MatrixTransposeMat2d(b);
+
+            var x = a.rows;
+            var z = a.cols;
+            var y = b.cols;
+
+            FloatMatrix2d result = new FloatMatrix2d(x, y);
+            for(int i = 0; i < x; i += stride)
+            for(int j = 0; j < y; j += stride)
+            for(int k = 0; k < z; k += stride)
+            {
+                for (int i2 = i; i2 < i+stride; i2++)
+                for (int j2 = j; j2 < j+stride; j2++)
+                {
+                    float sum = 0f;
+                    //for (int k2 = k; k2 < k+stride; k2++)
+                    for(int k2 = k; k2 < k+stride; k2 += Vector<float>.Count)
+                    {
+                        try{
+                        var am = a.Vector(i2, k2);
+                        var bm = bT.Vector(j2, k2);
+                        sum += Vector.Dot<float>(am, bm);
+                        }catch(Exception)
+                        {
+                            Console.WriteLine("error: " + i2 + "," + k2 + "," + j2);
+                            throw;
+                        }
+                        //sum += a[i2, k2] * bT[j2, k2];
+                    }
+                    result[i2,j2] = sum;
+                }
+            }
+            return result;
+        }
+
         public unsafe float[,] TransposeSumUnsafe(float[,] a, float[,] b)
         {
             var bT = MatrixTranspose(b);

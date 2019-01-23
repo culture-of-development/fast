@@ -25,8 +25,8 @@ namespace fast.blas
             var mm = new MatrixMultiply();
             if (size <= 20)
             {
-                EnsureCorrectness(a, b, mm.Naive, mm.NaiveSumUnsafe);
-                //EnsureCorrectness(a, b, mm.TransposeSum, am, bm, mm.TransposeSumVectorMat2d);
+                //EnsureCorrectness(a, b, mm.Naive, mm.NaiveSumUnsafe);
+                EnsureCorrectness(a, b, mm.TransposeSum, am, bm, mm.TransposeSumStridingVectorMat2d);
             }
             TimeIt("MM - " + nameof(mm.Naive), () => mm.Naive(a, b));
             TimeIt("MM - " + nameof(mm.NaiveMat2d), () => mm.NaiveMat2d(am, bm));
@@ -35,6 +35,7 @@ namespace fast.blas
             TimeIt("MM - " + nameof(mm.TransposeSum), () => mm.TransposeSum(a, b));
             TimeIt("MM - " + nameof(mm.TransposeSumMat2d), () => mm.TransposeSumMat2d(am, bm));
             TimeIt("MM - " + nameof(mm.TransposeSumVectorMat2d), () => mm.TransposeSumVectorMat2d(am, bm));
+            TimeIt("MM - " + nameof(mm.TransposeSumStridingVectorMat2d), () => mm.TransposeSumStridingVectorMat2d(am, bm));
             TimeIt("MM - " + nameof(mm.TransposeSumUnsafe), () => mm.TransposeSumUnsafe(a, b));
             TimeIt("MM - " + nameof(mm.StridingSum), () => mm.StridingSum(a, b));
             TimeIt("MM - " + nameof(mm.StridingSumUnsafe), () => mm.StridingSumUnsafe(a, b));
