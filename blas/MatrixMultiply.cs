@@ -312,6 +312,8 @@ namespace fast.blas
             return result;
         }
 
+        // TODO: striding transpose vector using spans https://stackoverflow.com/questions/6522729/how-to-reshape-an-array-in-c-sharp
+
         public unsafe float[,] StridingUnrolledUnsafe(float[,] a, float[,] b)
         {
             const int stride = 64 / sizeof(float);
