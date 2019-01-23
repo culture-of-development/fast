@@ -25,7 +25,7 @@ namespace fast.blas
             var mm = new MatrixMultiply();
             if (size <= 20)
             {
-                EnsureCorrectness(a, b, mm.Naive, mm.StridingSumUnsafe);
+                EnsureCorrectness(a, b, mm.Naive, mm.NaiveSumUnsafe);
                 //EnsureCorrectness(a, b, mm.TransposeSum, am, bm, mm.TransposeSumVectorMat2d);
             }
             TimeIt("MM - " + nameof(mm.Naive), () => mm.Naive(a, b));

@@ -71,14 +71,13 @@ namespace fast.blas
             for(int i = 0; i < x; i++)
             for(int j = 0; j < y; j++)
             {
+                float* aa = af+i*z;
+                float* bb = bf+j;
+                float* max_a = aa+z;
                 float sum = 0f;
-                float* aa = &af[i*z];
-                float* bb = &bf[j];
-                for(int k = 0; k < z; k++)
+                for(; aa < max_a; aa++, bb+=y)
                 {
                     sum += *aa * *bb;
-                    aa++;
-                    bb += y;
                 }
                 result[i,j] = sum;
             }
@@ -195,14 +194,13 @@ namespace fast.blas
             for(int i = 0; i < x; i++)
             for(int j = 0; j < y; j++)
             {
+                float* aa = af+i*z;
+                float* bb = bf+j*z;
+                float* max_a = aa+z;
                 float sum = 0f;
-                float* aa = &af[i*z];
-                float* bb = &bf[j*z];
-                for(int k = 0; k < z; k++)
+                for(; aa < max_a; aa++, bb++)
                 {
                     sum += *aa * *bb;
-                    aa++;
-                    bb++;
                 }
                 result[i,j] = sum;
             }
@@ -211,7 +209,6 @@ namespace fast.blas
 
         public float[,] StridingSum(float[,] a, float[,] b)
         {
-            // hardcoded cache line size for my i7 4980hq
             const int stride = 64 / sizeof(float);
 
             var x = a.GetLength(0);
@@ -240,7 +237,6 @@ namespace fast.blas
 
         public unsafe float[,] StridingSumUnsafe(float[,] a, float[,] b)
         {
-            // this 64 is hardcoded based on my i7 4980hq cache line size
             const int stride = 64 / sizeof(float);
             
             var x = a.GetLength(0);
@@ -261,10 +257,10 @@ namespace fast.blas
                     float* b_head = bf+k*y+j;
                     for (int j2 = j; j2 < j+stride; j2++, b_head++)
                     {
-                        float sum = 0f;
                         float* aa = a_head;
                         float* bb = b_head;
 
+                        float sum = 0f;
                         float* max_a = aa+stride;
                         for (; aa < max_a; aa++, bb+=y)
                         {
@@ -279,9 +275,7 @@ namespace fast.blas
 
         public unsafe float[,] StridingUnrolledUnsafe(float[,] a, float[,] b)
         {
-            // this 64 is hardcoded based on my i7 4980hq cache line size
-            //const int stride = 64 / sizeof(float);
-            const int stride = 16;
+            const int stride = 64 / sizeof(float);
             
             var x = a.GetLength(0);
             var z = a.GetLength(1);
@@ -295,22 +289,25 @@ namespace fast.blas
             for(int j = 0; j < y; j += stride)
             for(int k = 0; k < z; k += stride)
             {
-                for (int i2 = i; i2 < i+stride; i2++)
-                for (int j2 = j; j2 < j+stride; j2++)
+                float* a_head = af+i*z+k;
+                for (int i2 = i; i2 < i+stride; i2++, a_head+=z)
                 {
-                    float sum = 0f;
-                    float sum2 = 0f;
-                    float* aa = &af[i2*z+k];
-                    float* bb = &bf[k*y+j2];
-
-                    for (int k2 = k; k2 < k+stride; k2+=2)
+                    float* b_head = bf+k*y+j;
+                    for (int j2 = j; j2 < j+stride; j2++, b_head++)
                     {
-                        sum += *aa * *bb;
-                        sum2 += *(aa+1) * *(bb+y);
-                        aa += 2;
-                        bb += y*2;
+                        float* aa = a_head;
+                        float* bb = b_head;
+
+                        float sum = 0f;
+                        float sum2 = 0f;
+                        float* max_a = aa+stride;
+                        for (; aa < max_a; aa++,bb+=y<<1)
+                        {
+                            sum += *aa * *bb;
+                            sum2 += *(++aa) * *(bb+y);
+                        }
+                        result[i2,j2] += sum + sum2;
                     }
-                    result[i2,j2] += sum + sum2;
                 }
             }
             return result;
