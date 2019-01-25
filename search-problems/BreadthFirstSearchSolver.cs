@@ -5,6 +5,8 @@ namespace search_problems
 {
     public class BreadthFirstSearchSolver
     {
+        public long StatesEvaluated { get; set; }
+
         public NPuzzle.Location[] Solve(NPuzzle puzzle)
         {
             if (puzzle.IsGoal()) return new NPuzzle.Location[0];
@@ -14,6 +16,7 @@ namespace search_problems
             for(int i = 0; i < queue.Count; i++)
             {
                 var (state, lastMove, cameFrom) = queue[i];
+                this.StatesEvaluated++;
                 var moves = state.ExpandMoves();
                 foreach(var move in moves)
                 {
