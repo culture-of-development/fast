@@ -8,9 +8,24 @@ namespace search_problems
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            var puzzle3 = new NPuzzle(3);
-            puzzle3.Shuffle(3);
+            //TestGoalInitialization();
+            TestSolve();
+        }
 
+        private static void TestGoalInitialization()
+        {
+            var puzzle3 = new NPuzzle(3);
+            Console.WriteLine(puzzle3);
+            Console.WriteLine(puzzle3.IsGoal());
+
+            puzzle3.Shuffle(1);
+            Console.WriteLine("-----------");
+            Console.WriteLine(puzzle3);
+            Console.WriteLine(puzzle3.IsGoal());
+        }
+
+        private static void TestSolve()
+        {
             var puzzle3_hard = new NPuzzle(3, "8 6 7 2 5 4 3 0 1");
             
             var timer = Stopwatch.StartNew();

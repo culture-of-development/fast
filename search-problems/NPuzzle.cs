@@ -11,6 +11,7 @@ namespace search_problems
         public const int StepCost = 1;
 
         public int N { get; private set; }
+        private int totalCells;
 
         private byte[,] board;
         private int blankRow;
@@ -19,14 +20,16 @@ namespace search_problems
         private NPuzzle()
         {
             // to allow us to copy without initialization
+            // TODO: this is sort of an anti-pattern because there is no initialization, have to check everywhere everytime we update
         }
 
         public NPuzzle(int n)
         {
             this.N = n;
+            this.totalCells = n * n;
             this.board = Initialize(n);
-            this.blankCol = 0;
-            this.blankRow = 0;
+            this.blankCol = n-1;
+            this.blankRow = n-1;
         }
 
         public NPuzzle(int n, string initial)
@@ -40,10 +43,15 @@ namespace search_problems
 
         private static byte[,] Initialize(int size)
         {
+            byte value = 1;
+            int totalCells = size * size;
             byte[,] result = new byte[size, size];
             for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
-                result[i, j] = (byte)(i * size + j);
+            {
+                result[i, j] = value;
+                value = (byte)(++value % totalCells);
+            }
             return result;
         }
 
@@ -106,9 +114,10 @@ namespace search_problems
         {
             var copy = new NPuzzle { 
                 N = this.N, 
+                totalCells = this.totalCells,
                 board = this.board.Clone() as byte[,], 
                 blankCol = this.blankCol, 
-                blankRow = this.blankRow 
+                blankRow = this.blankRow,
             };
             copy.Move(newBlankLocation);
             return copy;
@@ -142,10 +151,13 @@ namespace search_problems
 
         public bool IsGoal()
         {
-            int expected = 0;
+            int expected = 1;
             for(int i = 0; i < this.N; i++)
             for(int j = 0; j < this.N; j++)
-                if (this.board[i, j] != expected++) return false;
+            {
+                if (this.board[i, j] != expected) return false;
+                expected = ++expected % this.totalCells;
+            }
             return true;
         }
 
