@@ -41,8 +41,10 @@ namespace search_problems
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.timers.timer?view=netframework-4.7.2
             var reportingTimer = new Timer(10_000);
-            reportingTimer.Elapsed += (Object source, ElapsedEventArgs e) => 
-                Log($"States evaluated: {solver.StatesEvaluated:#,0}   Millis: {timer.Elapsed.TotalMilliseconds}");
+            reportingTimer.Elapsed += (Object source, ElapsedEventArgs e) => {
+                var statesPerSecond = solver.StatesEvaluated / timer.Elapsed.TotalSeconds;
+                Log($"States evaluated: {solver.StatesEvaluated:#,0}   Millis: {timer.Elapsed.TotalMilliseconds}   S/s: {statesPerSecond:#,#.###}");
+            };
             reportingTimer.AutoReset = true;
             reportingTimer.Enabled = true;
 
