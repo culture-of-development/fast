@@ -13,7 +13,9 @@ namespace search_problems
         public int N { get; private set; }
         private int totalCells;
 
-        private byte[,] board;
+        const int valueBits = 4;
+        private ulong board;
+        private ulong goal;
         private int blankRow;
         private int blankCol;
 
@@ -25,9 +27,11 @@ namespace search_problems
 
         public NPuzzle(int n)
         {
+            if (n > 4) throw new ArgumentException("the maximum size this implementation can handle is 4.");
             this.N = n;
             this.totalCells = n * n;
-            this.board = Initialize(n);
+            this.goal = GenerateGoalState(n);
+            this.board = this.goal;
             this.blankCol = n-1;
             this.blankRow = n-1;
         }
@@ -35,22 +39,33 @@ namespace search_problems
         public NPuzzle(int n, string initial)
             : this(n)
         {
-            var values = initial.Split(' ').Select(m => (byte)int.Parse(m)).ToArray();
-            for(int i = 0; i < n; i++)
-            for(int j = 0; j < n; j++)
-                this.board[i, j] = values[i * n + j];
+            // TODO: validate that all expected numbers are present
+            var values = initial.Split(' ')
+                .Select(m => ulong.Parse(m))
+                .ToArray();
+
+            this.board = 0UL;
+            for(int i = values.Length-1; i >= 0; i--)
+            {
+                ulong value = values[i];
+                this.board = this.board << valueBits;
+                this.board |= value;
+                if (value == 0UL)
+                {
+                    this.blankRow = (int)i / n;
+                    this.blankCol = (int)i % n;
+                }
+            }
         }
 
-        private static byte[,] Initialize(int size)
+        private static ulong GenerateGoalState(int size)
         {
-            byte value = 1;
-            int totalCells = size * size;
-            byte[,] result = new byte[size, size];
-            for(int i = 0; i < size; i++)
-            for(int j = 0; j < size; j++)
+            ulong maxTileValue = (ulong)(size * size - 1);
+            ulong result = 0UL;
+            for(ulong i = maxTileValue; i > 0; i--)
             {
-                result[i, j] = value;
-                value = (byte)(++value % totalCells);
+                result = result << valueBits;
+                result |= i & 0xFUL;
             }
             return result;
         }
@@ -102,9 +117,19 @@ namespace search_problems
         // TODO: return the cost of the action with the new state
         public void Move(Location newBlankLocation)
         {
-            byte temp = this.board[this.blankRow, this.blankCol];
-            this.board[this.blankRow, this.blankCol] = this.board[newBlankLocation.Row, newBlankLocation.Col];
-            this.board[newBlankLocation.Row, newBlankLocation.Col] = temp;
+            int newBlankOffset = newBlankLocation.Row * valueBits * this.N + newBlankLocation.Col * valueBits;
+            int oldBlankOffset = this.blankRow * valueBits * this.N + this.blankCol * valueBits;
+            // Console.WriteLine(newBlankLocation);
+            // Console.WriteLine("newBlankOffset: " + newBlankOffset);
+            // Console.WriteLine("oldBlankOffset: " + oldBlankOffset);
+            // Console.WriteLine("board initial: " + this.board.ToString("x"));
+
+            ulong val = (this.board >> newBlankOffset) & 0xFUL;
+            // Console.WriteLine("val: " + val.ToString("x"));
+            this.board &= ~(0xFUL << newBlankOffset);
+            // Console.WriteLine("board zero: " + this.board.ToString("x"));
+            this.board |= val << oldBlankOffset;
+            // Console.WriteLine("board valed: " + this.board.ToString("x"));
             this.blankRow = newBlankLocation.Row;
             this.blankCol = newBlankLocation.Col;
         }
@@ -115,7 +140,8 @@ namespace search_problems
             var copy = new NPuzzle { 
                 N = this.N, 
                 totalCells = this.totalCells,
-                board = this.board.Clone() as byte[,], 
+                goal = this.goal,
+                board = this.board, 
                 blankCol = this.blankCol, 
                 blankRow = this.blankRow,
             };
@@ -125,25 +151,30 @@ namespace search_problems
 
         // TODO: move this elsewhere but right now the state is private
         // The Hamming distance in this case is the number of misplaced tiles
-        public int HammingDistance()
-        {
-            int hammingDistance = 0;
-            byte expected = 0;
-            for(int i = 0; i < this.N; i++)
-            for(int j = 0; j < this.N; j++)
-                hammingDistance += this.board[i, j] == expected++ ? 0 : 1;
-            return hammingDistance;
-        }
+        // public int HammingDistance()
+        // {
+        //     int hammingDistance = 0;
+        //     ulong expected = 0UL;
+        //     var value = this.board;
+        //     for(int i = 0; i < this.N; i++)
+        //     for(int j = 0; j < this.N; j++)
+        //     {
+        //         hammingDistance += (value & 0xFUL) == expected++ ? 0 : 1;
+        //     }
+        //     return hammingDistance;
+        // }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
+            var value = this.board;
             for(int i = 0; i < this.N; i++)
             {
                 if (i > 0) sb.AppendLine();
                 for(int j = 0; j < this.N; j++)
                 {
-                    sb.AppendFormat("{0:##0} ", this.board[i, j]);
+                    sb.AppendFormat("{0:##0} ", value & 0xFUL);
+                    value = value >> valueBits;
                 }
             }
             return sb.ToString();
@@ -151,14 +182,7 @@ namespace search_problems
 
         public bool IsGoal()
         {
-            int expected = 1;
-            for(int i = 0; i < this.N; i++)
-            for(int j = 0; j < this.N; j++)
-            {
-                if (this.board[i, j] != expected) return false;
-                expected = ++expected % this.totalCells;
-            }
-            return true;
+            return this.goal == this.board;
         }
 
         public class Location

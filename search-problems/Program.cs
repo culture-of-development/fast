@@ -23,6 +23,16 @@ namespace search_problems
             Console.WriteLine("-----------");
             Console.WriteLine(puzzle3);
             Console.WriteLine(puzzle3.IsGoal());
+
+            Console.WriteLine("-----------");
+            puzzle3 = new NPuzzle(3, "8 6 7 2 5 4 3 0 1");
+            Console.WriteLine(puzzle3);
+            Console.WriteLine(puzzle3.IsGoal());
+
+            puzzle3.Shuffle(1);
+            Console.WriteLine("-----------");
+            Console.WriteLine(puzzle3);
+            Console.WriteLine(puzzle3.IsGoal());
         }
 
         private static void Log(string value)

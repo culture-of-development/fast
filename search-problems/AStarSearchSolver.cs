@@ -26,7 +26,7 @@ namespace search_problems
                 foreach(var move in moves)
                 {
                     var successor = state.MoveCopy(move);
-                    var totalCost = top.cost + NPuzzle.StepCost + successor.HammingDistance();
+                    var totalCost = top.cost + NPuzzle.StepCost + 0;// successor.HammingDistance();
                     queue.Add(totalCost, new VisitedState(successor, move, top, top.cost + NPuzzle.StepCost));
                 }
             }
