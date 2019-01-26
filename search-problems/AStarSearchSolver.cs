@@ -7,10 +7,13 @@ namespace search_problems
     public class AStarSearchSolver : ISearchAlgorithm
     {
         public ulong StatesEvaluated { get; private set; }
+        public int MaxDepth { get; private set; }
 
         public NPuzzle.Location[] Solve(NPuzzle puzzle)
         {
             StatesEvaluated = 0UL;
+            MaxDepth = 0;
+
             IPriorityQueue<int, VisitedState> queue = new MinHeap<int, VisitedState>(10*1024*1024);
             queue.Push(-1, new VisitedState(puzzle, null, null, 0));
             while(!queue.IsEmpty)
@@ -29,6 +32,7 @@ namespace search_problems
                 {
                     var successor = state.MoveCopy(move);
                     var totalCost = top.cost + NPuzzle.StepCost + successor.HammingDistance();
+                    MaxDepth = Math.Max(MaxDepth, top.cost + NPuzzle.StepCost);
                     queue.Push(totalCost, new VisitedState(successor, move, top, top.cost + NPuzzle.StepCost));
                 }
             }
@@ -59,7 +63,7 @@ namespace search_problems
                 this.state = state;
                 this.lastMove = lastMove;
                 this.previous = previous;
-                this.cost = 0;
+                this.cost = cost;
             }
         }
     }

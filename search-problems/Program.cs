@@ -10,8 +10,8 @@ namespace search_problems
         {
             Console.WriteLine("Hello World!");
             //TestGoalInitialization();
-            TestMinHeap();
-            //TestSolve();
+            //TestMinHeap();
+            TestSolve();
         }
 
         private static void TestMinHeap()
@@ -69,6 +69,7 @@ namespace search_problems
             ISearchAlgorithm solver;
             //solver = new BreadthFirstSearchSolver();
             solver = new AStarSearchSolver();
+            Console.WriteLine(solver.GetType().Name);
 
             var timer = new Stopwatch();
 
@@ -76,7 +77,7 @@ namespace search_problems
             var reportingTimer = new Timer(10_000);
             reportingTimer.Elapsed += (Object source, ElapsedEventArgs e) => {
                 var statesPerSecond = solver.StatesEvaluated / timer.Elapsed.TotalSeconds;
-                Log($"States evaluated: {solver.StatesEvaluated:#,0}   Millis: {timer.Elapsed.TotalMilliseconds}   S/s: {statesPerSecond:#,#.###}");
+                Log($"evals: {solver.StatesEvaluated:#,0}   ms: {timer.Elapsed.TotalMilliseconds}   S/s: {statesPerSecond:#,#.###}   depth: {solver.MaxDepth}");
             };
             reportingTimer.AutoReset = true;
             reportingTimer.Enabled = true;
