@@ -16,7 +16,7 @@ namespace search_problems
             this.size = 0;
         }
 
-        public bool IsEmpty { get { return size > 0; } }
+        public bool IsEmpty { get { return size == 0; } }
         public void Push(TKey key, TValue value)
         {
             if (size == nodes.Length) Resize(nodes.Length * 2);
@@ -38,6 +38,7 @@ namespace search_problems
             var top = nodes[0];
             size--;
             var sink = nodes[0] = nodes[size];
+            nodes[size] = null;
             int current = 0;
             while(true)
             {
@@ -64,7 +65,7 @@ namespace search_problems
                     }
                     else
                     {
-                        if (rightChild.Key.CompareTo(sink.Key) < 0) break;
+                        if (rightChild.Key.CompareTo(sink.Key) >= 0) break;
                         nodes[current] = rightChild;
                         nodes[rightChildIndex] = sink;
                         current = rightChildIndex;
@@ -76,6 +77,7 @@ namespace search_problems
         }
         private void Resize(int newCapacity)
         {
+            if (newCapacity < minCapacity) return;
             var resized = new HeapNode<TKey, TValue>[newCapacity];
             for(int i = 0; i < nodes.Length; i++)
             {
@@ -88,6 +90,11 @@ namespace search_problems
         {
             public TK Key { get; set; }
             public TV Value { get; set; }
+
+            public override string ToString()
+            {
+                return this.Key.ToString();
+            }
         }
     }
 }

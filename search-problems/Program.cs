@@ -26,9 +26,12 @@ namespace search_problems
             while(!queue.IsEmpty)
             {
                 var val = queue.Pop();
-                if (val != expected) throw new InvalidOperationException("min heap fail");
+                if (val != expected++) throw new InvalidOperationException("min heap fail: " + expected);
             }
-            Console.WriteLine("Simple min heap seems fine.");
+            if (expected == values.Length)
+                Console.WriteLine("Simple min heap seems fine.");
+            else 
+                Console.WriteLine("Incorrect number of items extracted from queue.");
         }
 
         private static void TestGoalInitialization()
