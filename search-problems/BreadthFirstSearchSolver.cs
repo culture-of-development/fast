@@ -3,14 +3,13 @@ using System.Collections.Generic;
 
 namespace search_problems
 {
-    public class BreadthFirstSearchSolver
+    public class BreadthFirstSearchSolver : ISearchAlgorithm
     {
-        public long StatesEvaluated { get; set; }
+        public ulong StatesEvaluated { get; private set; }
 
         public NPuzzle.Location[] Solve(NPuzzle puzzle)
         {
-            if (puzzle.IsGoal()) return new NPuzzle.Location[0];
-
+            StatesEvaluated = 0UL;
             List<(NPuzzle state, NPuzzle.Location move, int cameFrom)> queue = new List<(NPuzzle, NPuzzle.Location, int)>();
             queue.Add((puzzle, null, -1));
             for(int i = 0; i < queue.Count; i++)

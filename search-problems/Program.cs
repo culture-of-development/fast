@@ -10,7 +10,25 @@ namespace search_problems
         {
             Console.WriteLine("Hello World!");
             //TestGoalInitialization();
-            TestSolve();
+            TestMinHeap();
+            //TestSolve();
+        }
+
+        private static void TestMinHeap()
+        {
+            var queue = new MinHeap<int, int>(1000);
+            var values = new int[] { 9, 2, 3, 8, 0, 4, 7, 5, 6, 1 };
+            foreach(var i in values)
+            {
+                queue.Push(i, i);
+            }
+            int expected = 0;
+            while(!queue.IsEmpty)
+            {
+                var val = queue.Pop();
+                if (val != expected) throw new InvalidOperationException("min heap fail");
+            }
+            Console.WriteLine("Simple min heap seems fine.");
         }
 
         private static void TestGoalInitialization()
@@ -45,7 +63,9 @@ namespace search_problems
             var puzzle3_hard = new NPuzzle(3, "8 6 7 2 5 4 3 0 1");
             var puzzle = puzzle3_hard;
             
-            var solver = new BreadthFirstSearchSolver();
+            ISearchAlgorithm solver;
+            //solver = new BreadthFirstSearchSolver();
+            solver = new AStarSearchSolver();
 
             var timer = new Stopwatch();
 

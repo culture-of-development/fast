@@ -119,17 +119,10 @@ namespace search_problems
         {
             int newBlankOffset = newBlankLocation.Row * valueBits * this.N + newBlankLocation.Col * valueBits;
             int oldBlankOffset = this.blankRow * valueBits * this.N + this.blankCol * valueBits;
-            // Console.WriteLine(newBlankLocation);
-            // Console.WriteLine("newBlankOffset: " + newBlankOffset);
-            // Console.WriteLine("oldBlankOffset: " + oldBlankOffset);
-            // Console.WriteLine("board initial: " + this.board.ToString("x"));
 
             ulong val = (this.board >> newBlankOffset) & 0xFUL;
-            // Console.WriteLine("val: " + val.ToString("x"));
             this.board &= ~(0xFUL << newBlankOffset);
-            // Console.WriteLine("board zero: " + this.board.ToString("x"));
             this.board |= val << oldBlankOffset;
-            // Console.WriteLine("board valed: " + this.board.ToString("x"));
             this.blankRow = newBlankLocation.Row;
             this.blankCol = newBlankLocation.Col;
         }
@@ -151,18 +144,21 @@ namespace search_problems
 
         // TODO: move this elsewhere but right now the state is private
         // The Hamming distance in this case is the number of misplaced tiles
-        // public int HammingDistance()
-        // {
-        //     int hammingDistance = 0;
-        //     ulong expected = 0UL;
-        //     var value = this.board;
-        //     for(int i = 0; i < this.N; i++)
-        //     for(int j = 0; j < this.N; j++)
-        //     {
-        //         hammingDistance += (value & 0xFUL) == expected++ ? 0 : 1;
-        //     }
-        //     return hammingDistance;
-        // }
+        public int HammingDistance()
+        {
+            int hammingDistance = 0;
+            ulong expected = 1UL;
+            ulong uCells = (ulong)this.totalCells;
+            var value = this.board;
+            for(int i = 0; i < this.N; i++)
+            for(int j = 0; j < this.N; j++)
+            {
+                hammingDistance += (value & 0xFUL) == expected ? 0 : 1;
+                value = value >> valueBits;
+                expected = (++expected) % uCells;
+            }
+            return hammingDistance;
+        }
 
         public override string ToString()
         {

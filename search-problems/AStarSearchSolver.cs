@@ -1,20 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace search_problems
 {
-    public class AStarSearchSolver
+    public class AStarSearchSolver : ISearchAlgorithm
     {
+        public ulong StatesEvaluated { get; private set; }
+
         public NPuzzle.Location[] Solve(NPuzzle puzzle)
         {
-            if (puzzle.IsGoal()) return new NPuzzle.Location[0];
-
-            var queue = new SortedList<int, VisitedState>();
-            queue.Add(-1, new VisitedState(puzzle, null, null, 0));
-            while(queue.Count > 0)
+            StatesEvaluated = 0UL;
+            IPriorityQueue<int, VisitedState> queue = new MinHeap<int, VisitedState>(10*1024*1024);
+            queue.Push(-1, new VisitedState(puzzle, null, null, 0));
+            while(!queue.IsEmpty)
             {
-                var top = queue[0];
-                queue.RemoveAt(0);
+                var top = queue.Pop();
+                StatesEvaluated++;
 
                 var state = top.state;
                 if (state.IsGoal())
@@ -26,8 +28,8 @@ namespace search_problems
                 foreach(var move in moves)
                 {
                     var successor = state.MoveCopy(move);
-                    var totalCost = top.cost + NPuzzle.StepCost + 0;// successor.HammingDistance();
-                    queue.Add(totalCost, new VisitedState(successor, move, top, top.cost + NPuzzle.StepCost));
+                    var totalCost = top.cost + NPuzzle.StepCost + successor.HammingDistance();
+                    queue.Push(totalCost, new VisitedState(successor, move, top, top.cost + NPuzzle.StepCost));
                 }
             }
             return null;
