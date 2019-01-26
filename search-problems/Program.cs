@@ -25,7 +25,7 @@ namespace search_problems
             int expected = 0;
             while(!queue.IsEmpty)
             {
-                var val = queue.Pop();
+                var (cost, val) = queue.Pop();
                 if (val != expected++) throw new InvalidOperationException("min heap fail: " + expected);
             }
             if (expected == values.Length)
@@ -67,18 +67,19 @@ namespace search_problems
             var puzzle = puzzle3_hard;
             
             ISearchAlgorithm solver;
-            //solver = new BreadthFirstSearchSolver();
-            solver = new AStarSearchSolver();
+            solver = new BreadthFirstSearchSolver();
+            //solver = new AStarSearchSolver();
             Console.WriteLine(solver.GetType().Name);
 
             var timer = new Stopwatch();
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.timers.timer?view=netframework-4.7.2
             var reportingTimer = new Timer(10_000);
-            reportingTimer.Elapsed += (Object source, ElapsedEventArgs e) => {
+            Action reportingHeartbeat = () => {
                 var statesPerSecond = solver.StatesEvaluated / timer.Elapsed.TotalSeconds;
-                Log($"evals: {solver.StatesEvaluated:#,0}   ms: {timer.Elapsed.TotalMilliseconds}   S/s: {statesPerSecond:#,#.###}   depth: {solver.MaxDepth}");
+                Log($"evals: {solver.StatesEvaluated:#,0}   ms: {timer.Elapsed.TotalMilliseconds}   S/s: {statesPerSecond:#,#.###}   cost: {solver.MaxCostEvaulated}");
             };
+            reportingTimer.Elapsed += (Object source, ElapsedEventArgs e) => reportingHeartbeat();
             reportingTimer.AutoReset = true;
             reportingTimer.Enabled = true;
 
@@ -105,6 +106,7 @@ namespace search_problems
                 Console.WriteLine("Optimal solution found!");
             }
             Console.WriteLine("Time: {0}", timer.Elapsed);
+            reportingHeartbeat();
         }
     }
 }

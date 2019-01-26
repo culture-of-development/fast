@@ -176,6 +176,33 @@ namespace search_problems
             return sb.ToString();
         }
 
+        public override int GetHashCode()
+        {
+            // this has to be implemented so that the sets can correctly dedupe
+            // the only meaningful part of this object is the board representation
+            // the rest is only there to help us perform other ops faster
+            return board.GetHashCode();
+        }
+
+        // override object.Equals
+        public override bool Equals(object obj)
+        {
+            //
+            // See the full list of guidelines at
+            //   http://go.microsoft.com/fwlink/?LinkID=85237
+            // and also the guidance for operator== at
+            //   http://go.microsoft.com/fwlink/?LinkId=85238
+            //
+            
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            
+            // TODO: write your implementation of Equals() here
+            return ((NPuzzle)obj).board == this.board;
+        }
+
         public bool IsGoal()
         {
             return this.goal == this.board;

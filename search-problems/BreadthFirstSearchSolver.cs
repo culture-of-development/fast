@@ -6,50 +6,51 @@ namespace search_problems
     public class BreadthFirstSearchSolver : ISearchAlgorithm
     {
         public ulong StatesEvaluated { get; private set; }
-        public int MaxDepth { get; private set; }
+        public int MaxCostEvaulated { get; private set; }
 
-        public NPuzzle.Location[] Solve(NPuzzle puzzle)
+        public NPuzzle.Location[] Solve(NPuzzle initialState)
         {
             StatesEvaluated = 0UL;
-            MaxDepth = 0;
+            MaxCostEvaulated = 0;
             
-            List<(NPuzzle state, NPuzzle.Location move, int cameFrom, int depth)> queue;
-            queue = new List<(NPuzzle, NPuzzle.Location, int, int)>();
-            queue.Add((puzzle, null, -1, 0));
-            for(int i = 0; i < queue.Count; i++)
+            var openSet = new MinHeap<int, NPuzzle>(1000);
+            var closedSet = new HashSet<NPuzzle>();
+            var cameFrom = new Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)>();
+            
+            openSet.Push(0, initialState);
+            cameFrom.Add(initialState, (null, null)); 
+
+            while (!openSet.IsEmpty)
             {
-                var (state, lastMove, cameFrom, depth) = queue[i];
-                this.StatesEvaluated++;
-                var moves = state.ExpandMoves();
-                foreach(var move in moves)
+                var (cost, state) = openSet.Pop();
+                closedSet.Add(state);
+                StatesEvaluated++;
+                MaxCostEvaulated = Math.Max(MaxCostEvaulated, cost);
+                if (state.IsGoal()) return RebuildSolution(cameFrom, state);
+                foreach(var move in state.ExpandMoves())
                 {
                     var successor = state.MoveCopy(move);
-                    if (successor.IsGoal())
-                    {
-                        return RebuildSolution(queue, move, i);
-                    }
-                    queue.Add((successor, move, i, depth + 1));
+                    if (closedSet.Contains(successor)) continue;
+                    openSet.Push(cost + 1, successor);
+                    cameFrom[successor] = (state, move);
                 }
-                MaxDepth = Math.Max(MaxDepth, depth + 1);
             }
             return null;
         }
 
         private NPuzzle.Location[] RebuildSolution(
-            List<(NPuzzle state, NPuzzle.Location move, int cameFrom, int depth)> visited,
-            NPuzzle.Location lastMove,
-            int lastStateIndex
+            Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)> cameFrom,
+            NPuzzle end
         )
         {
+            var state = end;
             var solution = new List<NPuzzle.Location>();
-            solution.Add(lastMove);
-            NPuzzle state;
-            NPuzzle.Location move;
-            int depth;
-            while(lastStateIndex > 0)
+            while(true)
             {
-                (state, move, lastStateIndex, depth) = visited[lastStateIndex];
+                var (parent, move) = cameFrom[state];
+                if (move == null) break;
                 solution.Add(move);
+                state = parent;
             }
             solution.Reverse();
             return solution.ToArray();

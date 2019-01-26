@@ -7,6 +7,7 @@ namespace search_problems
     {
         private int minCapacity;
         private int size;
+        // TODO: this being a class makes for a slow copy, use a tuple instead
         private HeapNode<TKey, TValue>[] nodes;
 
         public MinHeap(int initialCapacity)
@@ -33,7 +34,7 @@ namespace search_problems
             }
             size++;
         }
-        public TValue Pop()
+        public (TKey, TValue) Pop()
         {
             var top = nodes[0];
             size--;
@@ -72,14 +73,14 @@ namespace search_problems
                     }
                 }
             }
-            if (nodes.Length * 2 / 5 >= size) Resize(nodes.Length / 2);
-            return top.Value;
+            if (size < nodes.Length / 4) Resize(nodes.Length / 2);
+            return (top.Key, top.Value);
         }
         private void Resize(int newCapacity)
         {
             if (newCapacity < minCapacity) return;
             var resized = new HeapNode<TKey, TValue>[newCapacity];
-            for(int i = 0; i < nodes.Length; i++)
+            for(int i = 0; i < size; i++)
             {
                 resized[i] = nodes[i];
             }

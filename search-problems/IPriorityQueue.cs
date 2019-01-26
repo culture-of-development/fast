@@ -4,6 +4,6 @@ namespace search_problems
     {
         bool IsEmpty { get; }
         void Push(TKey key, TValue value);
-        TValue Pop();
+        (TKey, TValue) Pop();
     }
 }

@@ -3,7 +3,7 @@ namespace search_problems
     public interface ISearchAlgorithm
     {
         ulong StatesEvaluated { get; }
-        int MaxDepth { get; }
+        int MaxCostEvaulated { get; }
         NPuzzle.Location[] Solve(NPuzzle puzzle);
     }
 }
