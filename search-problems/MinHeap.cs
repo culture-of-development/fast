@@ -76,6 +76,7 @@ namespace search_problems
             if (size < nodes.Length / 4) Resize(nodes.Length / 2);
             return top.Value;
         }
+        
         private void Resize(int newCapacity)
         {
             if (newCapacity < minCapacity) return;

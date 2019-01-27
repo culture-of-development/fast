@@ -146,18 +146,36 @@ namespace search_problems
         // The Hamming distance in this case is the number of misplaced tiles
         public static int HammingDistance(NPuzzle state)
         {
-            int hammingDistance = 0;
+            int cost = 0;
             ulong expected = 1UL;
             ulong uCells = (ulong)state.totalCells;
             var value = state.board;
             for(int i = 0; i < state.N; i++)
             for(int j = 0; j < state.N; j++)
             {
-                hammingDistance += (value & 0xFUL) == expected ? 0 : 1;
+                cost += (value & 0xFUL) == expected ? 0 : 1;
                 value = value >> valueBits;
                 expected = (++expected) % uCells;
             }
-            return hammingDistance;
+            return cost;
+        }
+        public static int ManhattanDistance(NPuzzle state)
+        {
+            int cost = 0;
+            ulong uCells = (ulong)state.totalCells;
+            var value = state.board;
+            for(int i = 0; i < state.N; i++)
+            for(int j = 0; j < state.N; j++)
+            {
+                // the addition of state.totalCells here is to ensure the value is always positive
+                // and ensure the remainder function works as intended
+                int expectedCellLocation = ((int)(value & 0xFUL) - 1 + state.totalCells) % state.totalCells;
+                int expectedRow = expectedCellLocation / state.N;
+                int expectedCol = expectedCellLocation % state.N;
+                cost += Math.Abs(i - expectedRow) + Math.Abs(j - expectedCol);
+                value = value >> valueBits;
+            }
+            return cost;
         }
 
         public override string ToString()

@@ -11,8 +11,10 @@ namespace search_problems
             Console.WriteLine("Hello World!");
             //TestGoalInitialization();
             //TestMinHeap();
+            TestNPuzzleManhattanDistance();
             TestSolve(new BreadthFirstSearchSolver());
             TestSolve(new AStarSearchSolver(NPuzzle.HammingDistance));
+            TestSolve(new AStarSearchSolver(NPuzzle.ManhattanDistance));
         }
 
         private static void TestMinHeap()
@@ -59,7 +61,7 @@ namespace search_problems
 
         private static void TestSolve(ISearchAlgorithm solver)
         {
-            Console.WriteLine(solver.GetType().Name);
+            Console.WriteLine(solver);
 
             var puzzle3_hard = new NPuzzle(3, "8 6 7 2 5 4 3 0 1");
             var puzzle = puzzle3_hard;
@@ -89,20 +91,41 @@ namespace search_problems
             {
                 Console.WriteLine("Initial State ----------------");
                 Console.WriteLine(puzzle);
-                int i = 1;
+                int i = 0;
                 foreach(var move in solution)
                 {
-                    //Console.WriteLine("Move: {0} ----------------", i);
                     i++;
+                    //Console.WriteLine("Move: {0} ----------------", i);
                     puzzle.Move(move);
                     //Console.WriteLine(puzzle);
                 }
-                Console.WriteLine("Final State ----------------");
+                Console.WriteLine("Final State ({0} moves) ----------------", i);
                 Console.WriteLine(puzzle);
                 Console.WriteLine("Optimal solution found!");
             }
             Console.WriteLine("Time: {0}", timer.Elapsed);
             reportingHeartbeat();
+        }
+
+        private static void TestNPuzzleManhattanDistance()
+        {
+            int score, expected;
+            NPuzzle state;
+
+            state = new NPuzzle(3, "8 6 7 2 5 4 3 0 1");
+            score = NPuzzle.ManhattanDistance(state);
+            expected = 22;
+            if (score != expected) throw new Exception($"Manhattan Distance Fail: expected {expected}, got {score}\n{state}");
+
+            state = new NPuzzle(3, "1 2 3 4 5 6 7 8 0");
+            score = NPuzzle.ManhattanDistance(state);
+            expected = 0;
+            if (score != expected) throw new Exception($"Manhattan Distance Fail: expected {expected}, got {score}\n{state}");
+
+            state = new NPuzzle(3, "0 1 2 3 4 5 6 7 8");
+            score = NPuzzle.ManhattanDistance(state);
+            expected = 16;
+            if (score != expected) throw new Exception($"Manhattan Distance Fail: expected {expected}, got {score}\n{state}");
         }
 
         private static void Log(string value)

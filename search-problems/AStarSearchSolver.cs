@@ -9,11 +9,11 @@ namespace search_problems
         public ulong StatesEvaluated { get; private set; }
         public int MaxCostEvaulated { get; private set; }
 
-        private Func<NPuzzle, int> heursitic;
+        private Func<NPuzzle, int> heuristic;
 
-        public AStarSearchSolver(Func<NPuzzle, int> heursitic)
+        public AStarSearchSolver(Func<NPuzzle, int> heuristic)
         {
-            this.heursitic = heursitic;
+            this.heuristic = heuristic;
         }
 
         public NPuzzle.Location[] Solve(NPuzzle initialState)
@@ -39,7 +39,8 @@ namespace search_problems
                 {
                     var successor = state.MoveCopy(move);
                     if (closedSet.Contains(successor)) continue;
-                    openSet.Push(cost + NPuzzle.StepCost + heursitic(successor), (successor, cost + NPuzzle.StepCost));
+                    // TODO: check if it's better than the best in the open set
+                    openSet.Push(cost + NPuzzle.StepCost + heuristic(successor), (successor, cost + NPuzzle.StepCost));
                     cameFrom[successor] = (state, move);
                 }
             }
@@ -62,6 +63,11 @@ namespace search_problems
             }
             solution.Reverse();
             return solution.ToArray();
+        }
+
+        public override string ToString()
+        {
+            return $"A* ({heuristic.Method.Name})";
         }
     }
 }

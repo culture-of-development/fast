@@ -57,5 +57,10 @@ namespace search_problems
             solution.Reverse();
             return solution.ToArray();
         }
+
+        public override string ToString()
+        {
+            return "Breadth First Search (BFS)";
+        }
     }
 }
