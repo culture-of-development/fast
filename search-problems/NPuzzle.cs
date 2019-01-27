@@ -153,7 +153,11 @@ namespace search_problems
             for(int i = 0; i < state.N; i++)
             for(int j = 0; j < state.N; j++)
             {
-                cost += (value & 0xFUL) == expected ? 0 : 1;
+                ulong tileValue = value & 0xFUL;
+                if (tileValue != 0UL)
+                {
+                    cost += tileValue == expected ? 0 : 1;
+                }
                 value = value >> valueBits;
                 expected = (++expected) % uCells;
             }
@@ -169,10 +173,14 @@ namespace search_problems
             {
                 // the addition of state.totalCells here is to ensure the value is always positive
                 // and ensure the remainder function works as intended
-                int expectedCellLocation = ((int)(value & 0xFUL) - 1 + state.totalCells) % state.totalCells;
-                int expectedRow = expectedCellLocation / state.N;
-                int expectedCol = expectedCellLocation % state.N;
-                cost += Math.Abs(i - expectedRow) + Math.Abs(j - expectedCol);
+                int tileValue = (int)(value & 0xFUL);
+                if (tileValue != 0)
+                {
+                    int expectedCellLocation = (tileValue - 1 + state.totalCells) % state.totalCells;
+                    int expectedRow = expectedCellLocation / state.N;
+                    int expectedCol = expectedCellLocation % state.N;
+                    cost += Math.Abs(i - expectedRow) + Math.Abs(j - expectedCol);
+                }
                 value = value >> valueBits;
             }
             return cost;
