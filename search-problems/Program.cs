@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Timers;
 
-namespace search_problems
+namespace fast.search_problems
 {
     class Program
     {

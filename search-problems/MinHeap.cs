@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace search_problems
+namespace fast.search_problems
 {
     public class MinHeap<TKey, TValue> : IPriorityQueue<TKey, TValue> where TKey : IComparable<TKey>
     {

@@ -1,4 +1,4 @@
-namespace search_problems
+namespace fast.search_problems
 {
     public interface ISearchAlgorithm
     {
