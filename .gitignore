@@ -3,5 +3,4 @@ bin/
 obj/
 
 # vs code
-launch.json
-tasks.json
+.vscode/
