@@ -144,14 +144,14 @@ namespace search_problems
 
         // TODO: move this elsewhere but right now the state is private
         // The Hamming distance in this case is the number of misplaced tiles
-        public int HammingDistance()
+        public static int HammingDistance(NPuzzle state)
         {
             int hammingDistance = 0;
             ulong expected = 1UL;
-            ulong uCells = (ulong)this.totalCells;
-            var value = this.board;
-            for(int i = 0; i < this.N; i++)
-            for(int j = 0; j < this.N; j++)
+            ulong uCells = (ulong)state.totalCells;
+            var value = state.board;
+            for(int i = 0; i < state.N; i++)
+            for(int j = 0; j < state.N; j++)
             {
                 hammingDistance += (value & 0xFUL) == expected ? 0 : 1;
                 value = value >> valueBits;
@@ -176,30 +176,16 @@ namespace search_problems
             return sb.ToString();
         }
 
+        // these have to be implemented so that the sets can correctly dedupe
         public override int GetHashCode()
         {
-            // this has to be implemented so that the sets can correctly dedupe
             // the only meaningful part of this object is the board representation
             // the rest is only there to help us perform other ops faster
             return board.GetHashCode();
         }
-
-        // override object.Equals
         public override bool Equals(object obj)
         {
-            //
-            // See the full list of guidelines at
-            //   http://go.microsoft.com/fwlink/?LinkID=85237
-            // and also the guidance for operator== at
-            //   http://go.microsoft.com/fwlink/?LinkId=85238
-            //
-            
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-            
-            // TODO: write your implementation of Equals() here
+            if (obj == null || GetType() != obj.GetType()) return false;
             return ((NPuzzle)obj).board == this.board;
         }
 

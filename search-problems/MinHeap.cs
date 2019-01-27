@@ -34,7 +34,7 @@ namespace search_problems
             }
             size++;
         }
-        public (TKey, TValue) Pop()
+        public TValue Pop()
         {
             var top = nodes[0];
             size--;
@@ -74,7 +74,7 @@ namespace search_problems
                 }
             }
             if (size < nodes.Length / 4) Resize(nodes.Length / 2);
-            return (top.Key, top.Value);
+            return top.Value;
         }
         private void Resize(int newCapacity)
         {

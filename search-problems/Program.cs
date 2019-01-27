@@ -11,7 +11,8 @@ namespace search_problems
             Console.WriteLine("Hello World!");
             //TestGoalInitialization();
             //TestMinHeap();
-            TestSolve();
+            TestSolve(new BreadthFirstSearchSolver());
+            TestSolve(new AStarSearchSolver(NPuzzle.HammingDistance));
         }
 
         private static void TestMinHeap()
@@ -25,7 +26,7 @@ namespace search_problems
             int expected = 0;
             while(!queue.IsEmpty)
             {
-                var (cost, val) = queue.Pop();
+                var val = queue.Pop();
                 if (val != expected++) throw new InvalidOperationException("min heap fail: " + expected);
             }
             if (expected == values.Length)
@@ -56,20 +57,12 @@ namespace search_problems
             Console.WriteLine(puzzle3.IsGoal());
         }
 
-        private static void Log(string value)
+        private static void TestSolve(ISearchAlgorithm solver)
         {
-            Console.WriteLine("[" + DateTime.Now + "]: " + value);
-        }
+            Console.WriteLine(solver.GetType().Name);
 
-        private static void TestSolve()
-        {
             var puzzle3_hard = new NPuzzle(3, "8 6 7 2 5 4 3 0 1");
             var puzzle = puzzle3_hard;
-            
-            ISearchAlgorithm solver;
-            solver = new BreadthFirstSearchSolver();
-            //solver = new AStarSearchSolver();
-            Console.WriteLine(solver.GetType().Name);
 
             var timer = new Stopwatch();
 
@@ -99,14 +92,22 @@ namespace search_problems
                 int i = 1;
                 foreach(var move in solution)
                 {
-                    Console.WriteLine("Move: {0} ----------------", i++);
+                    //Console.WriteLine("Move: {0} ----------------", i);
+                    i++;
                     puzzle.Move(move);
-                    Console.WriteLine(puzzle);
+                    //Console.WriteLine(puzzle);
                 }
+                Console.WriteLine("Final State ----------------");
+                Console.WriteLine(puzzle);
                 Console.WriteLine("Optimal solution found!");
             }
             Console.WriteLine("Time: {0}", timer.Elapsed);
             reportingHeartbeat();
+        }
+
+        private static void Log(string value)
+        {
+            Console.WriteLine("[" + DateTime.Now + "]: " + value);
         }
     }
 }

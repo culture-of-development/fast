@@ -9,62 +9,59 @@ namespace search_problems
         public ulong StatesEvaluated { get; private set; }
         public int MaxCostEvaulated { get; private set; }
 
-        public NPuzzle.Location[] Solve(NPuzzle puzzle)
+        private Func<NPuzzle, int> heursitic;
+
+        public AStarSearchSolver(Func<NPuzzle, int> heursitic)
+        {
+            this.heursitic = heursitic;
+        }
+
+        public NPuzzle.Location[] Solve(NPuzzle initialState)
         {
             StatesEvaluated = 0UL;
             MaxCostEvaulated = 0;
+            
+            var openSet = new MinHeap<int, (NPuzzle state, int cost)>(1000);
+            var closedSet = new HashSet<NPuzzle>();
+            var cameFrom = new Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)>();
+            
+            openSet.Push(0, (initialState, 0));
+            cameFrom.Add(initialState, (null, null)); 
 
-            IPriorityQueue<int, VisitedState> queue = new MinHeap<int, VisitedState>(10*1024*1024);
-            queue.Push(-1, new VisitedState(puzzle, null, null, 0));
-            while(!queue.IsEmpty)
+            while (!openSet.IsEmpty)
             {
-                var (cost, top) = queue.Pop();
+                var (state, cost) = openSet.Pop();
+                closedSet.Add(state);
                 StatesEvaluated++;
-
-                var state = top.state;
-                if (state.IsGoal())
-                {
-                    return RebuildSolution(top);
-                }
-
-                var moves = state.ExpandMoves();
-                foreach(var move in moves)
+                MaxCostEvaulated = Math.Max(MaxCostEvaulated, cost);
+                if (state.IsGoal()) return RebuildSolution(cameFrom, state);
+                foreach(var move in state.ExpandMoves())
                 {
                     var successor = state.MoveCopy(move);
-                    var totalCost = top.cost + NPuzzle.StepCost + successor.HammingDistance();
-                    MaxCostEvaulated = Math.Max(MaxCostEvaulated, top.cost + NPuzzle.StepCost);
-                    queue.Push(totalCost, new VisitedState(successor, move, top, top.cost + NPuzzle.StepCost));
+                    if (closedSet.Contains(successor)) continue;
+                    openSet.Push(cost + NPuzzle.StepCost + heursitic(successor), (successor, cost + NPuzzle.StepCost));
+                    cameFrom[successor] = (state, move);
                 }
             }
             return null;
         }
 
-        private NPuzzle.Location[] RebuildSolution(VisitedState goal)
+        private NPuzzle.Location[] RebuildSolution(
+            Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)> cameFrom,
+            NPuzzle end
+        )
         {
+            var state = end;
             var solution = new List<NPuzzle.Location>();
-            while(goal.lastMove != null)
+            while(true)
             {
-                solution.Add(goal.lastMove);
-                goal = goal.previous;
+                var (parent, move) = cameFrom[state];
+                if (move == null) break;
+                solution.Add(move);
+                state = parent;
             }
             solution.Reverse();
             return solution.ToArray();
-        }
-
-        private class VisitedState
-        {
-            public NPuzzle state { get; set; }
-            public NPuzzle.Location lastMove { get; set; }
-            public VisitedState previous { get; set; }
-            public int cost { get; set; }
-
-            public VisitedState(NPuzzle state, NPuzzle.Location lastMove, VisitedState previous, int cost)
-            {
-                this.state = state;
-                this.lastMove = lastMove;
-                this.previous = previous;
-                this.cost = cost;
-            }
         }
     }
 }
