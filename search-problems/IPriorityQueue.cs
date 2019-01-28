@@ -1,3 +1,5 @@
+using System;
+
 namespace fast.search_problems
 {
     public interface IPriorityQueue<TKey, TValue>

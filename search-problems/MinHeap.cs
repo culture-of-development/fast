@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace fast.search_problems
 {
-    public class MinHeap<TKey, TValue> : IPriorityQueue<TKey, TValue> where TKey : IComparable<TKey>
+    public class MinHeap<TKey, TValue> : IPriorityQueue<TKey, TValue> 
+        where TKey : IComparable<TKey>
     {
         private int minCapacity;
         private int size;

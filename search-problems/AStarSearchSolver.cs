@@ -21,7 +21,7 @@ namespace fast.search_problems
             StatesEvaluated = 0UL;
             MaxCostEvaulated = 0;
             
-            var openSet = new MinHeap<int, (NPuzzle state, int cost)>(1000);
+            var openSet = new SortedSetPriorityQueue<int, (NPuzzle state, int cost)>();
             var closedSet = new HashSet<NPuzzle>();
             var cameFrom = new Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)>();
             
