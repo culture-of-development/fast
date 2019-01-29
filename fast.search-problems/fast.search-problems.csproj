@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <RootNamespace>search_problems</RootNamespace>
+    <RootNamespace>fast.search_problems</RootNamespace>
   </PropertyGroup>
 
 </Project>

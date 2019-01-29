@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blas", "blas\blas.csproj", "{F9E2D924-34F3-43FA-887D-86ED5DF3BF17}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.blas", "fast.blas\fast.blas.csproj", "{F9E2D924-34F3-43FA-887D-86ED5DF3BF17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search-problems", "search-problems\search-problems.csproj", "{70B60CFB-7A7A-4A30-BA5E-125935D214A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search-problems", "fast.search-problems\fast.search-problems.csproj", "{70B60CFB-7A7A-4A30-BA5E-125935D214A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search-problems.tests", "fast.search-problems.tests\fast.search-problems.tests.csproj", "{4CB31D15-61C4-4346-B616-09B1AE5B95A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,5 +46,17 @@ Global
 		{70B60CFB-7A7A-4A30-BA5E-125935D214A1}.Release|x64.Build.0 = Release|Any CPU
 		{70B60CFB-7A7A-4A30-BA5E-125935D214A1}.Release|x86.ActiveCfg = Release|Any CPU
 		{70B60CFB-7A7A-4A30-BA5E-125935D214A1}.Release|x86.Build.0 = Release|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Debug|x64.Build.0 = Debug|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Debug|x86.Build.0 = Debug|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Release|x64.ActiveCfg = Release|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Release|x64.Build.0 = Release|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Release|x86.ActiveCfg = Release|Any CPU
+		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
