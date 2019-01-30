@@ -10,7 +10,6 @@ namespace fast.search
         {
             Console.WriteLine("Hello World!");
             //TestGoalInitialization();
-            //TestSortedSetPriorityQueue();
             //TestNPuzzleManhattanDistance();
             TestSolve(new BreadthFirstSearchSolver());
             TestSolve(new AStarSearchSolver(NPuzzle.HammingDistance));
@@ -106,26 +105,6 @@ namespace fast.search
             score = NPuzzle.ManhattanDistance(state);
             expected = 12;
             if (score != expected) throw new Exception($"Manhattan Distance Fail: expected {expected}, got {score}\n{state}");
-        }
-
-        private static void TestSortedSetPriorityQueue()
-        {
-            var queue = new SortedSetPriorityQueue<int, int>();
-            var values = new int[] { 9, 2, 3, 8, 0, 4, 7, 5, 6, 1 };
-            foreach(var i in values)
-            {
-                queue.Push(i, i);
-            }
-            int expected = 0;
-            while(!queue.IsEmpty)
-            {
-                var val = queue.Pop();
-                if (val != expected++) throw new InvalidOperationException("sorted set fail: " + expected);
-            }
-            if (expected == values.Length)
-                Console.WriteLine("Simple sorted set seems fine.");
-            else 
-                Console.WriteLine("Incorrect number of items extracted from sorted set queue.");
         }
 
         private static void Log(string value)
