@@ -38,6 +38,7 @@ namespace fast.search
                 // important!: this must be <= in order for you to be able to remove min
                 // the reason here is really complicated but essentially this hack invalidates
                 // the assumption of unique keys for this set
+                // TODO: check if this always works or not, spoiler it's not valid!
                 return x.Cost.CompareTo(y.Cost) <= 0 ? -1 : 1;
             }
         }

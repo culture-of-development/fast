@@ -13,16 +13,18 @@ namespace fast.search
             StatesEvaluated = 0UL;
             MaxCostEvaulated = 0;
             
-            var openSet = new MinHeap<int, (NPuzzle state, int cost)>(1000);
+            var openSet = new OpenSet<int, StateCost>();
             var closedSet = new HashSet<NPuzzle>();
             var cameFrom = new Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)>();
             
-            openSet.Push(0, (initialState, 0));
+            openSet.PushOrImprove(0, new StateCost(initialState, 0));
             cameFrom.Add(initialState, (null, null)); 
 
             while (!openSet.IsEmpty)
             {
-                var (state, cost) = openSet.Pop();
+                var stateCost = openSet.PopMin();
+                var state = stateCost.State;
+                var cost = stateCost.Cost;
                 closedSet.Add(state);
                 StatesEvaluated++;
                 MaxCostEvaulated = Math.Max(MaxCostEvaulated, cost);
@@ -33,7 +35,7 @@ namespace fast.search
                     if (closedSet.Contains(successor)) continue;
                     // why is this 1 and not step cost? because that's how we enforce
                     // the BFS property of exploring on level fully before starting the next
-                    openSet.Push(cost + 1, (successor, cost + 1));
+                    openSet.PushOrImprove(cost + 1, new StateCost(successor, cost + 1));
                     cameFrom[successor] = (state, move);
                 }
             }

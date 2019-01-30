@@ -21,11 +21,11 @@ namespace fast.search
             StatesEvaluated = 0UL;
             MaxCostEvaulated = 0;
             
-            var openSet = new OpenSet<int, AStarOpenSetItem>();
+            var openSet = new OpenSet<int, StateCost>();
             var closedSet = new HashSet<NPuzzle>();
             var cameFrom = new Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)>();
             
-            openSet.PushOrImprove(0, new AStarOpenSetItem(initialState, 0));
+            openSet.PushOrImprove(0, new StateCost(initialState, 0));
             cameFrom.Add(initialState, (null, null)); 
 
             while (!openSet.IsEmpty)
@@ -43,7 +43,7 @@ namespace fast.search
                     if (closedSet.Contains(successor)) continue;
                     openSet.PushOrImprove(
                         cost + NPuzzle.StepCost + heuristic(successor), 
-                        new AStarOpenSetItem(successor, cost + NPuzzle.StepCost)
+                        new StateCost(successor, cost + NPuzzle.StepCost)
                     );
                     cameFrom[successor] = (state, move);
                 }
@@ -72,38 +72,6 @@ namespace fast.search
         public override string ToString()
         {
             return $"A* ({heuristic.Method.Name})";
-        }
-
-        private struct AStarOpenSetItem : IEquatable<AStarOpenSetItem>
-        {
-            public int Cost { get; private set; }
-            public NPuzzle State { get; private set; }
-            
-            public AStarOpenSetItem(NPuzzle state, int cost)
-            {
-                Cost = cost;
-                State = state;
-            }
-
-            // these have to be implemented so that the sets can correctly dedupe
-            public override int GetHashCode()
-            {
-                // the only meaningful part of this object is the board representation
-                // the rest is only there to help us perform other ops faster
-                return State.GetHashCode();
-            }
-            public override bool Equals(object obj)
-            {
-                return Equals((NPuzzle)obj);
-            }
-            public bool Equals(AStarOpenSetItem other)
-            {
-                return State.Equals(other.State);
-            }
-            public override string ToString()
-            {
-                return State.ToString();
-            }
         }
     }
 }
