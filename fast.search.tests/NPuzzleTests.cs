@@ -3,11 +3,14 @@ using System.Linq;
 using Xunit;
 
 using fast.search;
+using Xunit.Abstractions;
 
 namespace fast.search.tests
 {
-    public class NPuzzleTests
+    public class NPuzzleTests : TestsBase
     {
+        public NPuzzleTests(ITestOutputHelper output) : base(output) { }
+
         [Theory]
         [InlineData(3)]
         [InlineData(4)]

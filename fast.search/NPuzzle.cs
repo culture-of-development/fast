@@ -19,6 +19,14 @@ namespace fast.search
         private int blankRow;
         private int blankCol;
 
+        public int this[int row, int col]
+        {
+            get {
+                ulong tileValue = (this.board >> (row * valueBits * this.N) + (col * valueBits)) & 0xFUL;
+                return (int)tileValue;
+            }
+        }
+
         private NPuzzle()
         {
             // to allow us to copy without initialization

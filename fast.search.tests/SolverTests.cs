@@ -8,14 +8,9 @@ using Xunit.Abstractions;
 
 namespace fast.search.tests
 {
-    public class SolverTests
+    public class SolverTests : TestsBase
     {
-        private readonly ITestOutputHelper output;
-
-        public SolverTests(ITestOutputHelper output)
-        {
-            this.output = output;
-        }
+        public SolverTests(ITestOutputHelper output) : base(output) { }
         
         [Fact]
         public void TestBreadthFirstSearch()

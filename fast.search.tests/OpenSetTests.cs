@@ -2,11 +2,14 @@ using System;
 using Xunit;
 
 using fast.search;
+using Xunit.Abstractions;
 
 namespace fast.search.tests
 {
-    public class OpenSetTests
+    public class OpenSetTests : TestsBase
     {
+        public OpenSetTests(ITestOutputHelper output) : base(output) { }
+
         [Fact]
         public void AddSameIsNoOp()
         {
