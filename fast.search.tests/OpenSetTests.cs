@@ -11,8 +11,8 @@ namespace fast.search.tests
         public void AddSameIsNoOp()
         {
             var openSet = new OpenSet<int, int>();
-            openSet.Improve(1, 99);
-            openSet.Improve(1, 99);
+            openSet.PushOrImprove(1, 99);
+            openSet.PushOrImprove(1, 99);
             Assert.Equal(1, openSet.Size);
         }
 
@@ -20,8 +20,8 @@ namespace fast.search.tests
         public void AddingLowerCostReplacesState()
         {
             var openSet = new OpenSet<int, int>();
-            openSet.Improve(8, 99);
-            openSet.Improve(5, 99);
+            openSet.PushOrImprove(8, 99);
+            openSet.PushOrImprove(5, 99);
             Assert.Equal(1, openSet.Size);
             Assert.Equal(5, openSet.MinCost);
         }
@@ -30,8 +30,8 @@ namespace fast.search.tests
         public void AddingHigherCostIsNoOp()
         {
             var openSet = new OpenSet<int, int>();
-            openSet.Improve(5, 99);
-            openSet.Improve(8, 99);
+            openSet.PushOrImprove(5, 99);
+            openSet.PushOrImprove(8, 99);
             Assert.Equal(1, openSet.Size);
             Assert.Equal(5, openSet.MinCost);
         }
@@ -59,7 +59,7 @@ namespace fast.search.tests
             for(int j = 0; j < 2; j++)
             foreach(var i in values)
             {
-                openSet.Improve(i, i);
+                openSet.PushOrImprove(i, i);
             }
             int nextValue = 0;
             while(!openSet.IsEmpty)
@@ -69,6 +69,18 @@ namespace fast.search.tests
                 nextValue += 1;
             }
             Assert.Equal(nextValue, values.Length);
+        }
+
+        [Fact]
+        public void PopRemovesMin()
+        {
+            var openSet = new OpenSet<int, int>();
+            openSet.PushOrImprove(5, 99);
+            openSet.PushOrImprove(8, 33);
+            int minValue = openSet.PopMin();
+            Assert.Equal(99, minValue);
+            Assert.Equal(1, openSet.Size);
+            Assert.Equal(8, openSet.MinCost);
         }
     }
 }

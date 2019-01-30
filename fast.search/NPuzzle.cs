@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace fast.search
 {
-    public class NPuzzle
+    public class NPuzzle : IEquatable<NPuzzle>
     {
         public const int StepCost = 1;
 
@@ -211,13 +211,17 @@ namespace fast.search
         }
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            return ((NPuzzle)obj).board == this.board;
+            return Equals((NPuzzle)obj);
         }
 
         public bool IsGoal()
         {
             return this.goal == this.board;
+        }
+
+        public bool Equals(NPuzzle other)
+        {
+            return this.board == other.board;
         }
 
         public class Location

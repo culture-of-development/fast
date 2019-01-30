@@ -11,9 +11,9 @@ namespace fast.search
             Console.WriteLine("Hello World!");
             //TestGoalInitialization();
             //TestMinHeap();
-            TestSortedSetPriorityQueue();
+            //TestSortedSetPriorityQueue();
             //TestNPuzzleManhattanDistance();
-            TestSolve(new BreadthFirstSearchSolver());
+            //TestSolve(new BreadthFirstSearchSolver());
             TestSolve(new AStarSearchSolver(NPuzzle.HammingDistance));
             TestSolve(new AStarSearchSolver(NPuzzle.ManhattanDistance));
         }

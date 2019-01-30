@@ -21,16 +21,18 @@ namespace fast.search
             StatesEvaluated = 0UL;
             MaxCostEvaulated = 0;
             
-            var openSet = new SortedSetPriorityQueue<int, (NPuzzle state, int cost)>();
+            var openSet = new OpenSet<int, AStarOpenSetItem>();
             var closedSet = new HashSet<NPuzzle>();
             var cameFrom = new Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)>();
             
-            openSet.Push(0, (initialState, 0));
+            openSet.PushOrImprove(0, new AStarOpenSetItem(initialState, 0));
             cameFrom.Add(initialState, (null, null)); 
 
             while (!openSet.IsEmpty)
             {
-                var (state, cost) = openSet.Pop();
+                var next = openSet.PopMin();
+                var state = next.State;
+                var cost = next.Cost;
                 closedSet.Add(state);
                 StatesEvaluated++;
                 MaxCostEvaulated = Math.Max(MaxCostEvaulated, cost);
@@ -39,8 +41,10 @@ namespace fast.search
                 {
                     var successor = state.MoveCopy(move);
                     if (closedSet.Contains(successor)) continue;
-                    // TODO: check if it's better than the best in the open set
-                    openSet.Push(cost + NPuzzle.StepCost + heuristic(successor), (successor, cost + NPuzzle.StepCost));
+                    openSet.PushOrImprove(
+                        cost + NPuzzle.StepCost + heuristic(successor), 
+                        new AStarOpenSetItem(successor, cost + NPuzzle.StepCost)
+                    );
                     cameFrom[successor] = (state, move);
                 }
             }
@@ -68,6 +72,38 @@ namespace fast.search
         public override string ToString()
         {
             return $"A* ({heuristic.Method.Name})";
+        }
+
+        private struct AStarOpenSetItem : IEquatable<AStarOpenSetItem>
+        {
+            public int Cost { get; private set; }
+            public NPuzzle State { get; private set; }
+            
+            public AStarOpenSetItem(NPuzzle state, int cost)
+            {
+                Cost = cost;
+                State = state;
+            }
+
+            // these have to be implemented so that the sets can correctly dedupe
+            public override int GetHashCode()
+            {
+                // the only meaningful part of this object is the board representation
+                // the rest is only there to help us perform other ops faster
+                return State.GetHashCode();
+            }
+            public override bool Equals(object obj)
+            {
+                return Equals((NPuzzle)obj);
+            }
+            public bool Equals(AStarOpenSetItem other)
+            {
+                return State.Equals(other.State);
+            }
+            public override string ToString()
+            {
+                return State.ToString();
+            }
         }
     }
 }

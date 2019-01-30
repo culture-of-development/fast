@@ -8,7 +8,7 @@ namespace fast.search
         where TState : IEquatable<TState>
     {
         bool IsEmpty { get; }
-        void Improve(TCost cost, TState state);
+        void PushOrImprove(TCost cost, TState state);
         TState PopMin();
     }
 
@@ -35,12 +35,14 @@ namespace fast.search
                 // TODO: this limits the number of states to int range
                 if (x.State.GetHashCode() == y.State.GetHashCode()) return 0;
                 // HACK: if it's not the same state, dont ever consider the same based on cost
-                // TODO: look at actual impl and see if < or <= is more efficient
-                return x.Cost.CompareTo(y.Cost) < 0 ? -1 : 1;
+                // important!: this must be <= in order for you to be able to remove min
+                // the reason here is really complicated but essentially this hack invalidates
+                // the assumption of unique keys for this set
+                return x.Cost.CompareTo(y.Cost) <= 0 ? -1 : 1;
             }
         }
 
-        public void Improve(TCost cost, TState state)
+        public void PushOrImprove(TCost cost, TState state)
         {
             var possible = (Cost: cost, State: state);
             if (items.TryGetValue(possible, out var actual))
