@@ -1,9 +1,9 @@
 using System;
 using Xunit;
 
-using fast.search_problems;
+using fast.search;
 
-namespace fast.search_problems.tests
+namespace fast.search.tests
 {
     public class SortedSetPriorityQueueTests
     {

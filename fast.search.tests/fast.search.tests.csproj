@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <RootNamespace>fast.search_problems.tests</RootNamespace>
+    <RootNamespace>fast.search.tests</RootNamespace>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\fast.search-problems\fast.search-problems.csproj" />
+    <ProjectReference Include="..\fast.search\fast.search.csproj" />
   </ItemGroup>
 
 </Project>

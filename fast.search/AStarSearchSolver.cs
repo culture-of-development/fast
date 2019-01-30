@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace fast.search_problems
+namespace fast.search
 {
     public class AStarSearchSolver : ISearchAlgorithm
     {

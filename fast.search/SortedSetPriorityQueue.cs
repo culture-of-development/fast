@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace fast.search_problems
+namespace fast.search
 {
     public class SortedSetPriorityQueue<TKey, TValue> : IPriorityQueueSet<TKey, TValue>
         where TKey : IComparable<TKey>

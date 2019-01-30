@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.blas", "fast.blas\fast.blas.csproj", "{F9E2D924-34F3-43FA-887D-86ED5DF3BF17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search-problems", "fast.search-problems\fast.search-problems.csproj", "{70B60CFB-7A7A-4A30-BA5E-125935D214A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search", "fast.search\fast.search.csproj", "{70B60CFB-7A7A-4A30-BA5E-125935D214A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search-problems.tests", "fast.search-problems.tests\fast.search-problems.tests.csproj", "{4CB31D15-61C4-4346-B616-09B1AE5B95A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search.tests", "fast.search.tests\fast.search.tests.csproj", "{4CB31D15-61C4-4346-B616-09B1AE5B95A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

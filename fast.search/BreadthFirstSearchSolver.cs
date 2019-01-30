@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace fast.search_problems
+namespace fast.search
 {
     public class BreadthFirstSearchSolver : ISearchAlgorithm
     {
