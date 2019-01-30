@@ -10,32 +10,11 @@ namespace fast.search
         {
             Console.WriteLine("Hello World!");
             //TestGoalInitialization();
-            //TestMinHeap();
             //TestSortedSetPriorityQueue();
             //TestNPuzzleManhattanDistance();
-            //TestSolve(new BreadthFirstSearchSolver());
+            TestSolve(new BreadthFirstSearchSolver());
             TestSolve(new AStarSearchSolver(NPuzzle.HammingDistance));
             TestSolve(new AStarSearchSolver(NPuzzle.ManhattanDistance));
-        }
-
-        private static void TestMinHeap()
-        {
-            var queue = new MinHeap<int, int>(1000);
-            var values = new int[] { 9, 2, 3, 8, 0, 4, 7, 5, 6, 1 };
-            foreach(var i in values)
-            {
-                queue.Push(i, i);
-            }
-            int expected = 0;
-            while(!queue.IsEmpty)
-            {
-                var val = queue.Pop();
-                if (val != expected++) throw new InvalidOperationException("min heap fail: " + expected);
-            }
-            if (expected == values.Length)
-                Console.WriteLine("Simple min heap seems fine.");
-            else 
-                Console.WriteLine("Incorrect number of items extracted from min heap queue.");
         }
 
         private static void TestGoalInitialization()
