@@ -85,5 +85,18 @@ namespace fast.search.tests
             Assert.Equal(1, openSet.Size);
             Assert.Equal(8, openSet.MinCost);
         }
+
+        [Fact]
+        public void ImproveWorksAfterManySameValue()
+        {
+            var openSet = new OpenSet<int, int>();
+            openSet.PushOrImprove(5, 10);
+            openSet.PushOrImprove(5, 20);
+            openSet.PushOrImprove(5, 30);
+            
+            openSet.PushOrImprove(6, 20);
+            openSet.PushOrImprove(6, 30);
+            Assert.Equal(3, openSet.Size);
+        }
     }
 }
