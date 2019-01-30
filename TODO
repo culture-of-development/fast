@@ -1,0 +1,15 @@
+TODO: stream
+----------------
+improve the nodes explored per sec by orders of magnitude
+implement the tests in the TODOs for NPuzzle
+fix test: ImproveWorksAfterManySameValue
+
+
+
+DONE:
+----------------
+actually find the optimal solution to the hardest 8 puzzle problem!
+implement the manhattan distance metric : offstream
+make the search tests unit tests so we can just click them
+move all of the program stuff into "unit" tests
+change the search project from being a program to being a class lib
