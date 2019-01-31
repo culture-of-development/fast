@@ -78,24 +78,6 @@ namespace fast.search
             return result;
         }
 
-        //https://stackoverflow.com/a/19271062/178082
-        static int randomSeed = Environment.TickCount;
-        static readonly ThreadLocal<Random> random = new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref randomSeed)));
-        private static int Rand(int max)
-        {
-            return random.Value.Next(max);
-        }
-
-        public void Shuffle(int moves)
-        {
-            for(int i = 0; i < moves; i++)
-            {
-                var successors = ExpandMoves();
-                var selectedMove = successors[Rand(successors.Count)];
-                Move(selectedMove);
-            }
-        }
-
         public List<Location> ExpandMoves()
         {
             var successors = new List<Location>(4);
