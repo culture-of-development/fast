@@ -3,6 +3,7 @@ using Xunit;
 
 using fast.search;
 using Xunit.Abstractions;
+using System.Collections.Generic;
 
 namespace fast.search.tests
 {
@@ -87,16 +88,39 @@ namespace fast.search.tests
         }
 
         [Fact]
-        public void ImproveWorksAfterManySameValue()
+        public void ImproveWorksAfter3SameValue()
         {
             var openSet = new OpenSet<int, int>();
             openSet.PushOrImprove(5, 10);
+            openSet.PushOrImprove(5, 30);
             openSet.PushOrImprove(5, 20);
+            
+            openSet.PushOrImprove(6, 30);
+            openSet.PushOrImprove(6, 10);
+            openSet.PushOrImprove(6, 20);
+            Assert.Equal(3, openSet.Size);
+        }
+
+        [Fact]
+        public void ImproveWorksAfter7SameValue()
+        {
+            var openSet = new OpenSet<int, int>();
+            openSet.PushOrImprove(5, 10);
+            openSet.PushOrImprove(5, 60);
+            openSet.PushOrImprove(5, 70);
+            openSet.PushOrImprove(5, 20);
+            openSet.PushOrImprove(5, 40);
+            openSet.PushOrImprove(5, 50);
             openSet.PushOrImprove(5, 30);
             
+            openSet.PushOrImprove(6, 10);
+            openSet.PushOrImprove(6, 60);
+            openSet.PushOrImprove(6, 70);
             openSet.PushOrImprove(6, 20);
+            openSet.PushOrImprove(6, 40);
+            openSet.PushOrImprove(6, 50);
             openSet.PushOrImprove(6, 30);
-            Assert.Equal(3, openSet.Size);
+            Assert.Equal(7, openSet.Size);
         }
     }
 }

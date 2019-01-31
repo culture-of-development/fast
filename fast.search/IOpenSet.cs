@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace fast.search
 {
@@ -16,56 +17,59 @@ namespace fast.search
         where TCost : IComparable<TCost>
         where TState : IEquatable<TState>
     {
-        private SortedSet<(TCost Cost, TState State)> items;
+        Dictionary<TState, TCost> stateCosts;
+        SortedDictionary<TCost, HashSet<TState>> costStates;
 
         public bool IsEmpty => Size == 0;
-        public int Size => items.Count;
-        public TCost MinCost => items.Min.Cost;
+        public int Size => stateCosts.Count;
+        public TCost MinCost => costStates.First().Key;
 
         public OpenSet()
         {
-            items = new SortedSet<(TCost, TState)>(new MagicComparer());
-        }
-
-        private class MagicComparer : IComparer<(TCost Cost, TState State)>
-        {
-            public int Compare((TCost Cost, TState State) x, (TCost Cost, TState State) y)
-            {
-                // if the state is the same, it's the same regardless of cost
-                // TODO: this limits the number of states to int range
-                if (x.State.GetHashCode() == y.State.GetHashCode()) return 0;
-                // HACK: if it's not the same state, dont ever consider the same based on cost
-                // important!: this must be <= in order for you to be able to remove min
-                // the reason here is really complicated but essentially this hack invalidates
-                // the assumption of unique keys for this set
-                // TODO: check if this always works or not, spoiler it's not valid!
-                return x.Cost.CompareTo(y.Cost) <= 0 ? -1 : 1;
-            }
+            stateCosts = new Dictionary<TState, TCost>();
+            costStates = new SortedDictionary<TCost, HashSet<TState>>();
         }
 
         public void PushOrImprove(TCost cost, TState state)
         {
-            var possible = (Cost: cost, State: state);
-            if (items.TryGetValue(possible, out var actual))
+            if (stateCosts.ContainsKey(state))
             {
-                if (possible.Cost.CompareTo(actual.Cost) < 0)
-                {
-                    items.Remove(actual);
-                    items.Add(possible);
-                }
+                if (cost.CompareTo(stateCosts[state]) >= 0) return;
+                stateCosts[state] = cost;
+                // solid indication of a problem if this fails
+                costStates[cost].Remove(state);
             }
             else
             {
-                items.Add(possible);
+                stateCosts.Add(state, cost);
+            }
+            // add the state to the costStates
+            if (costStates.ContainsKey(cost))
+            {
+                costStates[cost].Add(state);
+            }
+            else
+            {
+                var states = new HashSet<TState>();
+                states.Add(state);
+                costStates.Add(cost, states);
             }
         }
 
         public TState PopMin()
         {
             if (IsEmpty) throw new InvalidOperationException("Cannot pop from an empty set.");
-            var min = items.Min;
-            items.Remove(min);
-            return min.State;
+            var min = costStates.First();
+            var minStates = min.Value;
+            // TODO: worried about stability? probably not
+            var state = minStates.First();
+            stateCosts.Remove(state);
+            minStates.Remove(state);
+            if (minStates.Count == 0)
+            {
+                costStates.Remove(min.Key);
+            }
+            return state;
         }
     }
 }
