@@ -188,7 +188,7 @@ namespace fast.search
                 if (i > 0) sb.AppendLine();
                 for(int j = 0; j < this.NCols; j++)
                 {
-                    sb.AppendFormat("{0:##0} ", value & 0xFUL);
+                    sb.AppendFormat("{0,2} ", value & 0xFUL);
                     value = value >> valueBits;
                 }
             }
