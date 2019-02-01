@@ -38,7 +38,7 @@ namespace fast.search.tests
         {
             output.WriteLine(solver.ToString());
 
-            var puzzle3_hard = new NPuzzle(3, initialState);
+            var puzzle3_hard = new NPuzzle(3, 3, initialState);
             var puzzle = puzzle3_hard;
 
             var timer = new Stopwatch();

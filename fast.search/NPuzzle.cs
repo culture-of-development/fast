@@ -10,7 +10,8 @@ namespace fast.search
     {
         public const int StepCost = 1;
 
-        public int N { get; private set; }
+        public int NRows { get; private set; }
+        public int NCols { get; private set; }
         private int totalCells;
 
         const int valueBits = 4;
@@ -22,7 +23,7 @@ namespace fast.search
         public int this[int row, int col]
         {
             get {
-                ulong tileValue = (this.board >> (row * valueBits * this.N) + (col * valueBits)) & 0xFUL;
+                ulong tileValue = (this.board >> (row * valueBits * this.NCols) + (col * valueBits)) & 0xFUL;
                 return (int)tileValue;
             }
         }
@@ -33,19 +34,20 @@ namespace fast.search
             // TODO: this is sort of an anti-pattern because there is no initialization, have to check everywhere everytime we update
         }
 
-        public NPuzzle(int n)
+        public NPuzzle(int nrows, int ncols)
         {
-            if (n > 4) throw new ArgumentException("the maximum size this implementation can handle is 4.");
-            this.N = n;
-            this.totalCells = n * n;
-            this.goal = GenerateGoalState(n);
+            if (nrows*ncols > 16) throw new ArgumentException($"The maximum number of tiles is 16, but {nrows*ncols} were requested.");
+            this.NRows = nrows;
+            this.NCols = ncols;
+            this.totalCells = nrows * ncols;
+            this.goal = GenerateGoalState(nrows, ncols);
             this.board = this.goal;
-            this.blankCol = n-1;
-            this.blankRow = n-1;
+            this.blankCol = nrows-1;
+            this.blankRow = ncols-1;
         }
 
-        public NPuzzle(int n, string initial)
-            : this(n)
+        public NPuzzle(int nrows, int ncols, string initial)
+            : this(nrows, ncols)
         {
             // TODO: validate that all expected numbers are present
             var values = initial.Split(' ')
@@ -60,15 +62,15 @@ namespace fast.search
                 this.board |= value;
                 if (value == 0UL)
                 {
-                    this.blankRow = (int)i / n;
-                    this.blankCol = (int)i % n;
+                    this.blankRow = (int)i / ncols;
+                    this.blankCol = (int)i % ncols;
                 }
             }
         }
 
-        private static ulong GenerateGoalState(int size)
+        private static ulong GenerateGoalState(int nrows, int ncols)
         {
-            ulong maxTileValue = (ulong)(size * size - 1);
+            ulong maxTileValue = (ulong)(nrows * ncols - 1);
             ulong result = 0UL;
             for(ulong i = maxTileValue; i > 0; i--)
             {
@@ -87,7 +89,7 @@ namespace fast.search
                 successors.Add(Location.Create(this.blankRow - 1, this.blankCol));
             }
             // down
-            if (this.blankRow < (this.N - 1))
+            if (this.blankRow < (this.NRows - 1))
             {
                 successors.Add(Location.Create(this.blankRow + 1, this.blankCol));
             }
@@ -97,7 +99,7 @@ namespace fast.search
                 successors.Add(Location.Create(this.blankRow, this.blankCol - 1));
             }
             // right
-            if (this.blankCol < (this.N - 1))
+            if (this.blankCol < (this.NCols - 1))
             {
                 successors.Add(Location.Create(this.blankRow, this.blankCol + 1));
             }
@@ -107,8 +109,8 @@ namespace fast.search
         // TODO: return the cost of the action with the new state
         public void Move(Location newBlankLocation)
         {
-            int newBlankOffset = newBlankLocation.Row * valueBits * this.N + newBlankLocation.Col * valueBits;
-            int oldBlankOffset = this.blankRow * valueBits * this.N + this.blankCol * valueBits;
+            int newBlankOffset = newBlankLocation.Row * valueBits * this.NCols + newBlankLocation.Col * valueBits;
+            int oldBlankOffset = this.blankRow * valueBits * this.NCols + this.blankCol * valueBits;
 
             ulong val = (this.board >> newBlankOffset) & 0xFUL;
             this.board &= ~(0xFUL << newBlankOffset);
@@ -121,7 +123,8 @@ namespace fast.search
         public NPuzzle MoveCopy(Location newBlankLocation)
         {
             var copy = new NPuzzle { 
-                N = this.N, 
+                NRows = this.NRows, 
+                NCols = this.NCols,
                 totalCells = this.totalCells,
                 goal = this.goal,
                 board = this.board, 
@@ -140,8 +143,8 @@ namespace fast.search
             ulong expected = 1UL;
             ulong uCells = (ulong)state.totalCells;
             var value = state.board;
-            for(int i = 0; i < state.N; i++)
-            for(int j = 0; j < state.N; j++)
+            for(int i = 0; i < state.NRows; i++)
+            for(int j = 0; j < state.NCols; j++)
             {
                 ulong tileValue = value & 0xFUL;
                 if (tileValue != 0UL)
@@ -158,8 +161,8 @@ namespace fast.search
             int cost = 0;
             ulong uCells = (ulong)state.totalCells;
             var value = state.board;
-            for(int i = 0; i < state.N; i++)
-            for(int j = 0; j < state.N; j++)
+            for(int i = 0; i < state.NRows; i++)
+            for(int j = 0; j < state.NCols; j++)
             {
                 // the addition of state.totalCells here is to ensure the value is always positive
                 // and ensure the remainder function works as intended
@@ -167,8 +170,8 @@ namespace fast.search
                 if (tileValue != 0)
                 {
                     int expectedCellLocation = (tileValue - 1 + state.totalCells) % state.totalCells;
-                    int expectedRow = expectedCellLocation / state.N;
-                    int expectedCol = expectedCellLocation % state.N;
+                    int expectedRow = expectedCellLocation / state.NCols;
+                    int expectedCol = expectedCellLocation % state.NCols;
                     cost += Math.Abs(i - expectedRow) + Math.Abs(j - expectedCol);
                 }
                 value = value >> valueBits;
@@ -180,10 +183,10 @@ namespace fast.search
         {
             var sb = new StringBuilder();
             var value = this.board;
-            for(int i = 0; i < this.N; i++)
+            for(int i = 0; i < this.NRows; i++)
             {
                 if (i > 0) sb.AppendLine();
-                for(int j = 0; j < this.N; j++)
+                for(int j = 0; j < this.NCols; j++)
                 {
                     sb.AppendFormat("{0:##0} ", value & 0xFUL);
                     value = value >> valueBits;
