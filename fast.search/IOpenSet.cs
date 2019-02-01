@@ -34,10 +34,16 @@ namespace fast.search
         {
             if (stateCosts.ContainsKey(state))
             {
-                if (cost.CompareTo(stateCosts[state]) >= 0) return;
+                var existingCost = stateCosts[state];
+                if (cost.CompareTo(existingCost) >= 0) return;
                 stateCosts[state] = cost;
                 // solid indication of a problem if this fails
-                costStates[cost].Remove(state);
+                var states = costStates[existingCost];
+                states.Remove(state);
+                if (states.Count == 0) 
+                {
+                    costStates.Remove(existingCost);
+                }
             }
             else
             {
