@@ -1,12 +1,16 @@
 TODO: stream
 ----------------
-implement the tests in the TODOs for NPuzzle
+change output to show just the stats for the last time period, not averaged over full run
 improve the nodes explored per sec by orders of magnitude
+implement the tests in the TODOs for NPuzzle
 animation showing how to solve it
 
 
 DONE:
 ----------------
+2019-02-01
+fixed failing OpenSet test
+implemented independent rows and cols
 
 
 
