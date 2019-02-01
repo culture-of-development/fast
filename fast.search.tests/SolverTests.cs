@@ -16,38 +16,48 @@ namespace fast.search.tests
         public void TestBreadthFirstSearch()
         {
             var solver = new BreadthFirstSearchSolver();
-            TestSolver(solver, "8 6 7 2 5 4 3 0 1", 31);
+            TestSolver(solver, 3, 3, "8 6 7 2 5 4 3 0 1", 31);
+            // cannot really solve larger problems with this method
         }
 
         [Fact]
         public void TestAStarSearchHammingDistance()
         {
             var solver = new AStarSearchSolver(NPuzzle.HammingDistance);
-            TestSolver(solver, "8 6 7 2 5 4 3 0 1", 31);
+            TestSolver(solver, 3, 3, "8 6 7 2 5 4 3 0 1", 31);
+            // cannot really solve larger problems with this method
         }
 
         [Fact]
         public void TestAStarSearchManhattanDistance()
         {
             var solver = new AStarSearchSolver(NPuzzle.ManhattanDistance);
-            TestSolver(solver, "8 6 7 2 5 4 3 0 1", 31);
+            //TestSolver(solver, 3, 3, "8 6 7 2 5 4 3 0 1", 31);
+            //TestSolver(solver, 3, 4, "3 7 9 11 4 8 10 0 5 2 1 6", 37);
+            TestSolver(solver, 4, 4, "14 1 9 6 4 8 12 5 7 2 3 0 10 11 13 15", 45);
         }
 
         // optimal cost of -1 represents no solution!
-        private void TestSolver(ISearchAlgorithm solver, string initialState, int optimalCost)
+        private void TestSolver(ISearchAlgorithm solver, int nrows, int ncols, string initialState, int optimalCost)
         {
             output.WriteLine(solver.ToString());
 
-            var puzzle3_hard = new NPuzzle(3, 3, initialState);
+            var puzzle3_hard = new NPuzzle(nrows, ncols, initialState);
             var puzzle = puzzle3_hard;
 
             var timer = new Stopwatch();
+            double lastTotalS = 0d;
+            ulong lastEvals = 0UL;
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.timers.timer?view=netframework-4.7.2
             var reportingTimer = new Timer(10_000);
             Action reportingHeartbeat = () => {
-                var statesPerSecond = solver.StatesEvaluated / timer.Elapsed.TotalSeconds;
+                var currentTotalS = timer.Elapsed.TotalSeconds;
+                var currentEvals = solver.StatesEvaluated;
+                var statesPerSecond = (currentEvals - lastEvals) / (currentTotalS - lastTotalS);
                 output.WriteLine($"evals: {solver.StatesEvaluated:#,0}   ms: {timer.Elapsed.TotalMilliseconds}   S/s: {statesPerSecond:#,#.###}   cost: {solver.MaxCostEvaulated}");
+                lastTotalS = currentTotalS;
+                lastEvals = currentEvals;
             };
             reportingTimer.Elapsed += (Object source, ElapsedEventArgs e) => reportingHeartbeat();
             reportingTimer.AutoReset = true;
