@@ -195,6 +195,31 @@ namespace fast.search
             return sb.ToString();
         }
 
+        public (int, bool) IsSolvable()
+        {
+            int inversions = 0;
+            ulong b = this.board;
+            while(b > 0UL)
+            {
+                ulong value = b & 0xFUL;
+                if (value != 0UL)
+                {
+                    for(ulong o = b >> valueBits; o > 0; o = o >> valueBits)
+                    {
+                        ulong other = o & 0xFUL;
+                        if (value > other && other > 0)
+                        {
+                            inversions++;
+                        }
+                    }
+                }
+                b = b >> valueBits;
+            }
+            bool inversionsEven = inversions % 2 == 0;
+            if (this.NRows % 2 == 1) return (inversions, inversionsEven);
+            return (inversions, (inversions + this.blankRow) % 2 == 1);
+        }
+
         // these have to be implemented so that the sets can correctly dedupe
         public override int GetHashCode()
         {

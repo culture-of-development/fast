@@ -1,6 +1,6 @@
 TODO: stream
 ----------------
-change output to show just the stats for the last time period, not averaged over full run
+change the goal state to match the literature!
 improve the nodes explored per sec by orders of magnitude
 implement the tests in the TODOs for NPuzzle
 animation showing how to solve it
@@ -8,18 +8,8 @@ animation showing how to solve it
 
 DONE:
 ----------------
-2019-02-01
-fixed failing OpenSet test
-implemented independent rows and cols
-
-
-
-2019-01-31
-fix test: ImproveWorksAfterManySameValue
-
-2019-01-30
-actually find the optimal solution to the hardest 8 puzzle problem!
-implement the manhattan distance metric : offstream
-make the search tests unit tests so we can just click them
-move all of the program stuff into "unit" tests
-change the search project from being a program to being a class lib
+2019-02-06
+Got some really nice chatting going on and learned a ton
+    specifically closures over set with operations: look more into this @SGK7
+        https://www.youtube.com/watch?v=PGPRBBMwCXk
+    I'm using the wrong goal state, compared to whats in the literature
