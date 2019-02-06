@@ -50,7 +50,7 @@ namespace fast.search
             : this(nrows, ncols)
         {
             // TODO: validate that all expected numbers are present
-            var values = initial.Split(' ')
+            var values = initial.Replace(",", "").Split(' ')
                 .Select(m => ulong.Parse(m))
                 .ToArray();
 
