@@ -17,8 +17,8 @@ namespace fast.search
             var closedSet = new HashSet<NPuzzle>();
             var cameFrom = new Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)>();
             
-            openSet.PushOrImprove(0, new StateCost(initialState, 0));
-            cameFrom.Add(initialState, (null, null)); 
+            var wasImprovement = openSet.PushOrImprove(0, new StateCost(initialState, 0));
+            if (wasImprovement) cameFrom.Add(initialState, (null, null)); 
 
             while (!openSet.IsEmpty)
             {
