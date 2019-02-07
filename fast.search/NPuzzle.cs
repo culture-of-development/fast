@@ -42,8 +42,8 @@ namespace fast.search
             this.totalCells = nrows * ncols;
             this.goal = GenerateGoalState(nrows, ncols);
             this.board = this.goal;
-            this.blankCol = nrows-1;
-            this.blankRow = ncols-1;
+            this.blankCol = 0;
+            this.blankRow = 0;
         }
 
         public NPuzzle(int nrows, int ncols, string initial)
@@ -77,6 +77,7 @@ namespace fast.search
                 result = result << valueBits;
                 result |= i & 0xFUL;
             }
+            result = result << valueBits;
             return result;
         }
 
@@ -140,7 +141,7 @@ namespace fast.search
         public static int HammingDistance(NPuzzle state)
         {
             int cost = 0;
-            ulong expected = 1UL;
+            ulong expected = 0UL;
             ulong uCells = (ulong)state.totalCells;
             var value = state.board;
             for(int i = 0; i < state.NRows; i++)
@@ -152,7 +153,7 @@ namespace fast.search
                     cost += tileValue == expected ? 0 : 1;
                 }
                 value = value >> valueBits;
-                expected = (++expected) % uCells;
+                expected++;
             }
             return cost;
         }
@@ -169,7 +170,7 @@ namespace fast.search
                 int tileValue = (int)(value & 0xFUL);
                 if (tileValue != 0)
                 {
-                    int expectedCellLocation = (tileValue - 1 + state.totalCells) % state.totalCells;
+                    int expectedCellLocation = tileValue;
                     int expectedRow = expectedCellLocation / state.NCols;
                     int expectedCol = expectedCellLocation % state.NCols;
                     cost += Math.Abs(i - expectedRow) + Math.Abs(j - expectedCol);
@@ -217,7 +218,7 @@ namespace fast.search
             }
             bool inversionsEven = inversions % 2 == 0;
             if (this.NRows % 2 == 1) return (inversions, inversionsEven);
-            return (inversions, (inversions + this.blankRow) % 2 == 1);
+            return (inversions, (inversions + this.blankRow) % 2 == 0);
         }
 
         // these have to be implemented so that the sets can correctly dedupe

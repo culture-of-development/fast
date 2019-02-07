@@ -32,9 +32,9 @@ namespace fast.search.tests
         public void TestAStarSearchManhattanDistance()
         {
             var solver = new AStarSearchSolver(NPuzzle.ManhattanDistance);
-            //TestSolver(solver, 3, 3, "8 6 7 2 5 4 3 0 1", 31);
+            TestSolver(solver, 3, 3, "8 6 7 2 5 4 3 0 1", 31);
             //TestSolver(solver, 3, 4, "3 7 9 11 4 8 10 0 5 2 1 6", 37);
-            TestSolver(solver, 4, 4, "9, 14, 5, 7, 8, 15, 1, 2, 10, 4, 13, 6, 12, 0, 3, 11", 45);
+            //TestSolver(solver, 4, 4, "14, 1, 9, 6, 4, 8, 12, 5, 7, 2, 3, 0, 10, 11, 13, 15", 45);
         }
 
         // optimal cost of -1 represents no solution!

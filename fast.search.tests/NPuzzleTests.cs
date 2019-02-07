@@ -40,12 +40,12 @@ namespace fast.search.tests
         }
 
         [Theory]
-        [InlineData(3, 3, "8 6 7 2 5 4 3 0 1", 21)]
-        [InlineData(3, 3, "1 2 3 4 5 6 7 8 0", 0)]
-        [InlineData(3, 3, "0 1 2 3 4 5 6 7 8", 12)]
-        [InlineData(3, 4, "3 7 9 11 4 8 10 0 5 2 1 6", 29)]
-        [InlineData(4, 3, "3 7 9 11 4 8 10 0 5 2 1 6", 26)]
-        [InlineData(4, 4, "14 1 9 6 4 8 12 5 7 2 3 0 10 11 13 15", 37)]
+        [InlineData(3, 3, "8 6 7 2 5 4 3 0 1", 19)]
+        [InlineData(3, 3, "0 1 2 3 4 5 6 7 8", 0)]
+        [InlineData(3, 3, "1 2 3 4 5 6 7 8 0", 12)]
+        [InlineData(3, 4, "3 7 9 11 4 8 10 0 5 2 1 6", 24)]
+        [InlineData(4, 3, "3 7 9 11 4 8 10 0 5 2 1 6", 27)]
+        [InlineData(4, 4, "14 1 9 6 4 8 12 5 7 2 3 0 10 11 13 15", 35)]
         private void TestNPuzzleManhattanDistance(int nrows, int ncols, string initialState, int expected)
         {
             var state = new NPuzzle(nrows, ncols, initialState);
@@ -54,21 +54,22 @@ namespace fast.search.tests
         }
 
         [Theory]
-        // [InlineData(3, 3, "8 6 7 2 5 4 3 0 1", true)]
-        // [InlineData(3, 3, "1 2 3 4 5 6 7 8 0", true)]
-        // [InlineData(3, 3, "0 1 2 3 4 5 6 7 8", true)]
-        //[InlineData(4, 4, "14, 1, 9, 6, 4, 8, 12, 5, 7, 2, 3, 0, 10, 11, 13, 15", true)]
-        [InlineData(4, 4, "9, 14, 5, 7, 8, 15, 1, 2, 10, 4, 13, 6, 12, 0, 3, 11", true)]
-        // [InlineData(4, 4, "13, 8, 14, 3, 9, 1, 0, 7, 15, 5, 4, 10, 12, 2, 6, 11", true)]
-        // [InlineData(4, 4, "4, 7, 13, 10, 1, 2, 9, 6, 12, 8, 14, 5, 3, 0, 11, 15", true)]
-        // [InlineData(4, 4, "6, 0, 5, 10, 11, 12, 9, 2, 1, 7, 4, 3, 14, 8, 13, 15", true)]
-        // [InlineData(4, 4, "5, 4, 7, 1, 11, 12, 14, 15, 10, 13, 8, 6, 2, 0, 9, 3", true)]
+        [InlineData(3, 3, "8 6 7 2 5 4 3 0 1", true)]
+        [InlineData(3, 3, "1 2 3 4 5 6 7 8 0", true)]
+        [InlineData(3, 3, "0 1 2 3 4 5 6 7 8", true)]
+        [InlineData(4, 4, "14, 1, 9, 6, 4, 8, 12, 5, 7, 2, 3, 0, 10, 11, 13, 15", true)]
+        [InlineData(4, 4, "9, 14, 5, 7, 8, 15, 1, 2, 10, 4, 13, 6, 12, 0, 3, 11", false)]
+        [InlineData(4, 4, "9, 14, 5, 7, 8, 15, 1, 2, 10, 4, 13, 6, 12, 0, 11, 3", true)]
+        [InlineData(4, 4, "13, 8, 14, 3, 9, 1, 0, 7, 15, 5, 4, 10, 12, 2, 6, 11", true)]
+        [InlineData(4, 4, "4, 7, 13, 10, 1, 2, 9, 6, 12, 8, 14, 5, 3, 0, 11, 15", true)]
+        [InlineData(4, 4, "6, 0, 5, 10, 11, 12, 9, 2, 1, 7, 4, 3, 14, 8, 13, 15", true)]
+        [InlineData(4, 4, "5, 4, 7, 1, 11, 12, 14, 15, 10, 13, 8, 6, 2, 0, 9, 3", true)]
         private void TestNPuzzleIsSolvable(int nrows, int ncols, string initialState, bool expected)
         {
             var state = new NPuzzle(nrows, ncols, initialState);
             var sol = state.IsSolvable();
-            output.WriteLine(initialState);
-            output.WriteLine("inversions: " + sol.Item1);
+            //output.WriteLine(initialState);
+            //output.WriteLine("inversions: " + sol.Item1);
             Assert.Equal(expected, sol.Item2);
         }
 
