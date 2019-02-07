@@ -84,25 +84,25 @@ namespace fast.search
         public List<Location> ExpandMoves()
         {
             var successors = new List<Location>(4);
-            // up
-            if (this.blankRow > 0)
-            {
-                successors.Add(Location.Create(this.blankRow - 1, this.blankCol));
-            }
             // down
             if (this.blankRow < (this.NRows - 1))
             {
                 successors.Add(Location.Create(this.blankRow + 1, this.blankCol));
+            }
+            // right
+            if (this.blankCol < (this.NCols - 1))
+            {
+                successors.Add(Location.Create(this.blankRow, this.blankCol + 1));
             }
             // left
             if (this.blankCol > 0)
             {
                 successors.Add(Location.Create(this.blankRow, this.blankCol - 1));
             }
-            // right
-            if (this.blankCol < (this.NCols - 1))
+            // up
+            if (this.blankRow > 0)
             {
-                successors.Add(Location.Create(this.blankRow, this.blankCol + 1));
+                successors.Add(Location.Create(this.blankRow - 1, this.blankCol));
             }
             return successors;
         }
