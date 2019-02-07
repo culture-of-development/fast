@@ -1,6 +1,5 @@
 TODO: stream
 ----------------
-change the goal state to match the literature!
 improve the nodes explored per sec by orders of magnitude
 implement the tests in the TODOs for NPuzzle
 animation showing how to solve it
@@ -8,6 +7,13 @@ animation showing how to solve it
 
 DONE:
 ----------------
+2019-02-07
+change the goal state to match the literature
+OpenSet returns true/false for was improvement
+make the solver generic so it can solve any problem
+
+
+
 2019-02-06
 Got some really nice chatting going on and learned a ton
     specifically closures over set with operations: look more into this @SGK7

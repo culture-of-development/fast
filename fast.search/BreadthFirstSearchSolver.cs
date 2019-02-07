@@ -3,22 +3,24 @@ using System.Collections.Generic;
 
 namespace fast.search
 {
-    public class BreadthFirstSearchSolver : ISearchAlgorithm
+    public class BreadthFirstSearchSolver<TState> : ISearchAlgorithm<TState>
+        where TState : IProblemState<TState>
     {
         public ulong StatesEvaluated { get; private set; }
         public int MaxCostEvaulated { get; private set; }
 
-        public NPuzzle.Location[] Solve(NPuzzle initialState)
+        public IProblemAction[] Solve(IProblem<TState> problem)
         {
             StatesEvaluated = 0UL;
             MaxCostEvaulated = 0;
             
-            var openSet = new OpenSet<int, StateCost>();
-            var closedSet = new HashSet<NPuzzle>();
-            var cameFrom = new Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)>();
+            var openSet = new OpenSet<int, StateCost<TState>>();
+            var closedSet = new HashSet<TState>();
+            var cameFrom = new Dictionary<TState, (TState parent, IProblemAction move)>();
             
-            var wasImprovement = openSet.PushOrImprove(0, new StateCost(initialState, 0));
-            if (wasImprovement) cameFrom.Add(initialState, (null, null)); 
+            var initialState = problem.GetInitialState();
+            openSet.PushOrImprove(0, new StateCost<TState>(initialState, 0));
+            cameFrom.Add(initialState, (default(TState), null)); 
 
             while (!openSet.IsEmpty)
             {
@@ -28,27 +30,28 @@ namespace fast.search
                 closedSet.Add(state);
                 StatesEvaluated++;
                 MaxCostEvaulated = Math.Max(MaxCostEvaulated, cost);
-                if (state.IsGoal()) return RebuildSolution(cameFrom, state);
-                foreach(var move in state.ExpandMoves())
+                if (problem.IsGoal(state)) return RebuildSolution(cameFrom, state);
+                foreach(var move in problem.Expand(state))
                 {
-                    var successor = state.MoveCopy(move);
+                    var successor = state.Copy();
+                    int stepCost = problem.ApplyAction(successor, move);
                     if (closedSet.Contains(successor)) continue;
                     // why is this 1 and not step cost? because that's how we enforce
                     // the BFS property of exploring on level fully before starting the next
-                    openSet.PushOrImprove(cost + 1, new StateCost(successor, cost + 1));
-                    cameFrom[successor] = (state, move);
+                    var wasImprovement = openSet.PushOrImprove(cost + stepCost, new StateCost<TState>(successor, cost + stepCost));
+                    if (wasImprovement) cameFrom.Add(initialState, (default(TState), null)); 
                 }
             }
             return null;
         }
 
-        private NPuzzle.Location[] RebuildSolution(
-            Dictionary<NPuzzle, (NPuzzle parent, NPuzzle.Location move)> cameFrom,
-            NPuzzle end
+        private IProblemAction[] RebuildSolution(
+            Dictionary<TState, (TState parent, IProblemAction move)> cameFrom,
+            TState end
         )
         {
             var state = end;
-            var solution = new List<NPuzzle.Location>();
+            var solution = new List<IProblemAction>();
             while(true)
             {
                 var (parent, move) = cameFrom[state];

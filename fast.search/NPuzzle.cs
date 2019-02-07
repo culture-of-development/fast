@@ -6,7 +6,45 @@ using System.Threading;
 
 namespace fast.search
 {
-    public class NPuzzle : IEquatable<NPuzzle>
+    public class NPuzzleProblem : IProblem<NPuzzle>
+    {
+        public int NRows { get; private set; }
+        public int NCols { get; private set; }
+
+        private string initialState;
+        
+        public NPuzzleProblem(int nrows, int ncols, string initialState = null)
+        {
+            this.NRows = nrows;
+            this.NCols = ncols;
+            this.initialState = initialState;
+        }
+
+        public int ApplyAction(NPuzzle state, IProblemAction action)
+        {
+            state.Move(action);
+            return NPuzzle.StepCost;
+        }
+
+        public IEnumerable<IProblemAction> Expand(NPuzzle state)
+        {
+            return state.ExpandMoves();
+        }
+
+        public NPuzzle GetInitialState()
+        {
+            if (initialState != null)
+                return new NPuzzle(NRows, NCols, initialState);
+            return new NPuzzle(NRows, NCols);
+        }
+
+        public bool IsGoal(NPuzzle state)
+        {
+            return state.IsGoal();
+        }
+    }
+
+    public class NPuzzle : IProblemState<NPuzzle>, IEquatable<NPuzzle>
     {
         public const int StepCost = 1;
 
@@ -108,8 +146,9 @@ namespace fast.search
         }
 
         // TODO: return the cost of the action with the new state
-        public void Move(Location newBlankLocation)
+        public void Move(IProblemAction action)
         {
+            Location newBlankLocation = (Location)action;
             int newBlankOffset = newBlankLocation.Row * valueBits * this.NCols + newBlankLocation.Col * valueBits;
             int oldBlankOffset = this.blankRow * valueBits * this.NCols + this.blankCol * valueBits;
 
@@ -120,10 +159,9 @@ namespace fast.search
             this.blankCol = newBlankLocation.Col;
         }
 
-        // TODO: return the cost of the action with the new state
-        public NPuzzle MoveCopy(Location newBlankLocation)
+        public NPuzzle Copy()
         {
-            var copy = new NPuzzle { 
+            return new NPuzzle { 
                 NRows = this.NRows, 
                 NCols = this.NCols,
                 totalCells = this.totalCells,
@@ -132,8 +170,6 @@ namespace fast.search
                 blankCol = this.blankCol, 
                 blankRow = this.blankRow,
             };
-            copy.Move(newBlankLocation);
-            return copy;
         }
 
         // TODO: move this elsewhere but right now the state is private
@@ -243,7 +279,7 @@ namespace fast.search
             return this.board == other.board;
         }
 
-        public class Location
+        public class Location : IProblemAction
         {
             public int Row { get; private set; }
             public int Col { get; private set; }

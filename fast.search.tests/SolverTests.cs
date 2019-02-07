@@ -15,35 +15,36 @@ namespace fast.search.tests
         [Fact]
         public void TestBreadthFirstSearch()
         {
-            var solver = new BreadthFirstSearchSolver();
-            TestSolver(solver, 3, 3, "8 6 7 2 5 4 3 0 1", 31);
+            var solver = new BreadthFirstSearchSolver<NPuzzle>();
+            var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1");
+            TestSolver(solver, problem, 31);
             // cannot really solve larger problems with this method
         }
 
         [Fact]
         public void TestAStarSearchHammingDistance()
         {
-            var solver = new AStarSearchSolver(NPuzzle.HammingDistance);
-            TestSolver(solver, 3, 3, "8 6 7 2 5 4 3 0 1", 31);
+            var solver = new AStarSearchSolver<NPuzzle>(NPuzzle.HammingDistance);
+            var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1");
+            TestSolver(solver, problem, 31);
             // cannot really solve larger problems with this method
         }
 
         [Fact]
         public void TestAStarSearchManhattanDistance()
         {
-            var solver = new AStarSearchSolver(NPuzzle.ManhattanDistance);
-            TestSolver(solver, 3, 3, "8 6 7 2 5 4 3 0 1", 31);
-            //TestSolver(solver, 3, 4, "3 7 9 11 4 8 10 0 5 2 1 6", 37);
-            //TestSolver(solver, 4, 4, "14, 1, 9, 6, 4, 8, 12, 5, 7, 2, 3, 0, 10, 11, 13, 15", 45);
+            var solver = new AStarSearchSolver<NPuzzle>(NPuzzle.ManhattanDistance);
+            //var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1"); int expected = 31;
+            //var problem = new NPuzzleProblem(3, 4, "3 7 9 11 4 8 10 0 5 2 1 6"); int expected = 37;
+            var problem = new NPuzzleProblem(4, 4, "14, 1, 9, 6, 4, 8, 12, 5, 7, 2, 3, 0, 10, 11, 13, 15"); int expected = 45;
+            //var problem = new NPuzzleProblem(4, 4, "4, 3, 6, 13, 7, 15, 9, 0, 10, 5, 8, 11, 2, 12, 1, 14"); int expected = 50;
+            TestSolver(solver, problem, expected);
         }
 
         // optimal cost of -1 represents no solution!
-        private void TestSolver(ISearchAlgorithm solver, int nrows, int ncols, string initialState, int optimalCost)
+        private void TestSolver(ISearchAlgorithm<NPuzzle> solver, IProblem<NPuzzle> problem, int optimalCost)
         {
             output.WriteLine(solver.ToString());
-
-            var puzzle3_hard = new NPuzzle(nrows, ncols, initialState);
-            var puzzle = puzzle3_hard;
 
             var timer = new Stopwatch();
             double lastTotalS = 0d;
@@ -64,7 +65,7 @@ namespace fast.search.tests
             reportingTimer.Enabled = true;
 
             timer.Start();
-            var solution = solver.Solve(puzzle);
+            var solution = solver.Solve(problem);
             timer.Stop();
             reportingTimer.Enabled = false;
 
@@ -77,6 +78,7 @@ namespace fast.search.tests
             }
             else
             {
+                var puzzle = problem.GetInitialState();
                 output.WriteLine("Initial State ----------------");
                 output.WriteLine(puzzle.ToString());
                 int i = 0;

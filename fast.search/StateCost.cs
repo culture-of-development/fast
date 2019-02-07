@@ -2,12 +2,13 @@ using System;
 
 namespace fast.search
 {
-    public struct StateCost : IEquatable<StateCost>
+    public struct StateCost<TState> : IEquatable<StateCost<TState>> 
+        where TState : IProblemState<TState>
     {
         public int Cost { get; private set; }
-        public NPuzzle State { get; private set; }
+        public TState State { get; private set; }
         
-        public StateCost(NPuzzle state, int cost)
+        public StateCost(TState state, int cost)
         {
             Cost = cost;
             State = state;
@@ -22,9 +23,9 @@ namespace fast.search
         }
         public override bool Equals(object obj)
         {
-            return Equals((NPuzzle)obj);
+            return Equals((StateCost<TState>)obj);
         }
-        public bool Equals(StateCost other)
+        public bool Equals(StateCost<TState> other)
         {
             return State.Equals(other.State);
         }
