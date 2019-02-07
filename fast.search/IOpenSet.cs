@@ -9,7 +9,7 @@ namespace fast.search
         where TState : IEquatable<TState>
     {
         bool IsEmpty { get; }
-        void PushOrImprove(TCost cost, TState state);
+        bool PushOrImprove(TCost cost, TState state);
         TState PopMin();
     }
 
@@ -30,12 +30,12 @@ namespace fast.search
             costStates = new SortedDictionary<TCost, HashSet<TState>>();
         }
 
-        public void PushOrImprove(TCost cost, TState state)
+        public bool PushOrImprove(TCost cost, TState state)
         {
             if (stateCosts.ContainsKey(state))
             {
                 var existingCost = stateCosts[state];
-                if (cost.CompareTo(existingCost) >= 0) return;
+                if (cost.CompareTo(existingCost) >= 0) return false;
                 stateCosts[state] = cost;
                 // solid indication of a problem if this fails
                 var states = costStates[existingCost];
@@ -60,6 +60,7 @@ namespace fast.search
                 states.Add(state);
                 costStates.Add(cost, states);
             }
+            return true;
         }
 
         public TState PopMin()

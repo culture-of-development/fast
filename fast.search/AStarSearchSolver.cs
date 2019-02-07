@@ -41,11 +41,12 @@ namespace fast.search
                 {
                     var successor = state.MoveCopy(move);
                     if (closedSet.Contains(successor)) continue;
-                    openSet.PushOrImprove(
-                        cost + NPuzzle.StepCost + heuristic(successor), 
-                        new StateCost(successor, cost + NPuzzle.StepCost)
-                    );
-                    cameFrom[successor] = (state, move);
+                    var wasImprovement = 
+                        openSet.PushOrImprove(
+                            cost + NPuzzle.StepCost + heuristic(successor), 
+                            new StateCost(successor, cost + NPuzzle.StepCost)
+                        );
+                    if (wasImprovement) cameFrom[successor] = (state, move);
                 }
             }
             return null;
