@@ -7,6 +7,7 @@ namespace fast.search
     {
     }
 
+    // TODO: check if we still need these
     public interface IProblemState<TState> : IEquatable<TState>
     {
     }
