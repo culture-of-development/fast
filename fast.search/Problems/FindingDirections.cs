@@ -7,11 +7,11 @@ namespace fast.search.problems
     {
         // this is essentially just a graph
         // we're going to use an adjacency list to keep track of all edges
-        private IWeightedGraph<FindingDirectionsState> map;
+        private IWeightedGraph<FindingDirectionsState, double> map;
         private FindingDirectionsState start;
         private FindingDirectionsState end;
 
-        public FindingDirectionsProblem(IWeightedGraph<FindingDirectionsState> map, FindingDirectionsState start, FindingDirectionsState end)
+        public FindingDirectionsProblem(IWeightedGraph<FindingDirectionsState, double> map, FindingDirectionsState start, FindingDirectionsState end)
         {
             this.map = map;
             this.start = start;
