@@ -17,7 +17,7 @@ namespace fast.search.tests
         {
             var solver = new BreadthFirstSearchSolver<NPuzzle>();
             var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1");
-            TestSolver(solver, problem, 31);
+            TestSolver(solver, problem, 27);
             // cannot really solve larger problems with this method
         }
 
@@ -26,7 +26,7 @@ namespace fast.search.tests
         {
             var solver = new AStarSearchSolver<NPuzzle>(NPuzzle.HammingDistance);
             var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1");
-            TestSolver(solver, problem, 31);
+            TestSolver(solver, problem, 27);
             // cannot really solve larger problems with this method
         }
 
