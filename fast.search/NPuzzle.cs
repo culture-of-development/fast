@@ -122,25 +122,25 @@ namespace fast.search
         public List<Location> ExpandMoves()
         {
             var successors = new List<Location>(4);
-            // down
-            if (this.blankRow < (this.NRows - 1))
+            // up
+            if (this.blankRow > 0)
             {
-                successors.Add(Location.Create(this.blankRow + 1, this.blankCol));
-            }
-            // right
-            if (this.blankCol < (this.NCols - 1))
-            {
-                successors.Add(Location.Create(this.blankRow, this.blankCol + 1));
+                successors.Add(Location.Create(this.blankRow - 1, this.blankCol));
             }
             // left
             if (this.blankCol > 0)
             {
                 successors.Add(Location.Create(this.blankRow, this.blankCol - 1));
             }
-            // up
-            if (this.blankRow > 0)
+            // right
+            if (this.blankCol < (this.NCols - 1))
             {
-                successors.Add(Location.Create(this.blankRow - 1, this.blankCol));
+                successors.Add(Location.Create(this.blankRow, this.blankCol + 1));
+            }
+            // down
+            if (this.blankRow < (this.NRows - 1))
+            {
+                successors.Add(Location.Create(this.blankRow + 1, this.blankCol));
             }
             return successors;
         }
@@ -254,7 +254,7 @@ namespace fast.search
             }
             bool inversionsEven = inversions % 2 == 0;
             if (this.NRows % 2 == 1) return (inversions, inversionsEven);
-            return (inversions, (inversions + this.blankRow) % 2 == 0);
+            return (inversions, (inversions + this.blankRow) % 2 == 0);  // this zero depends on the goal
         }
 
         // these have to be implemented so that the sets can correctly dedupe

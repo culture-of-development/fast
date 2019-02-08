@@ -5,12 +5,17 @@ implement the tests in the TODOs for NPuzzle
 animation showing how to solve it
 
 
+remeber:
+    dotnet test --filter "FullyQualifiedName=fast.search.tests.SolverTests.TestIDAStarSearchManhattanDistance"
+
+
 DONE:
 ----------------
 2019-02-07
 change the goal state to match the literature
 OpenSet returns true/false for was improvement
 make the solver generic so it can solve any problem
+offstream: implement IDA*/improve the nodes explored per sec by orders of magnitude
 
 
 
