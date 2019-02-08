@@ -39,7 +39,7 @@ namespace fast.search
                     // why is this 1 and not step cost? because that's how we enforce
                     // the BFS property of exploring on level fully before starting the next
                     var wasImprovement = openSet.PushOrImprove(cost + stepCost, new StateCost<TState>(successor, cost + stepCost));
-                    if (wasImprovement) cameFrom.Add(initialState, (default(TState), null)); 
+                    if (wasImprovement) cameFrom[successor] = (state, move); 
                 }
             }
             return null;
