@@ -32,18 +32,12 @@ namespace fast.search.problems
 
     public class FindingDirectionsState : IProblemState<FindingDirectionsState>, IProblemAction, IGraphNode
     {
-        public double Lat { get; private set; }
-        public double Lon { get; private set; }
+        public string LocationName { get; private set; }
         public ulong NodeId { get; private set; }
-
-        public FindingDirectionsState Copy()
-        {
-            return new FindingDirectionsState { Lat = this.Lat, Lon = this.Lon };
-        }
 
         public bool Equals(FindingDirectionsState other)
         {
-            return this.Lat == other.Lat && this.Lon == other.Lon;
+            return this.NodeId == other.NodeId;
         }
     }
 }
