@@ -48,6 +48,7 @@ namespace fast.search
 
         public IEnumerable<TNode> GetNeighbors(TNode node)
         {
+            if (!edges.ContainsKey(node.NodeId)) return new TNode[0];
             return edges[node.NodeId].Values.Select(m => m.node);
         }
     }

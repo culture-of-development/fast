@@ -11,6 +11,11 @@ remeber:
 
 DONE:
 ----------------
+2019-02-08
+implement FindingDirectionsProblem
+fix BreadthFirstSearch copy/paste bug
+
+
 2019-02-07
 change the goal state to match the literature
 OpenSet returns true/false for was improvement
