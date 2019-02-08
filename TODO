@@ -1,6 +1,6 @@
 TODO: stream
 ----------------
-improve the nodes explored per sec by orders of magnitude
+refactor the NPuzzleProblem and NPuzzle because all the logic is in NPuzzle currently
 implement the tests in the TODOs for NPuzzle
 animation showing how to solve it
 
@@ -15,7 +15,9 @@ DONE:
 change the goal state to match the literature
 OpenSet returns true/false for was improvement
 make the solver generic so it can solve any problem
-offstream: implement IDA*/improve the nodes explored per sec by orders of magnitude
+offstream: 
+    implement IDA*/improve the nodes explored per sec by orders of magnitude
+    ^ improve the nodes explored per sec by orders of magnitude
 
 
 
