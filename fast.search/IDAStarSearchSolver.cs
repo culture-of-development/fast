@@ -17,7 +17,6 @@ namespace fast.search
             this.heuristic = heuristic;
         }
 
-        const int NO_SOLUTION = -2;
         const double FOUND = -1;
         private IProblem<TState> problem;
         public IProblemAction[] Solve(IProblem<TState> problem)
@@ -34,7 +33,8 @@ namespace fast.search
                 double result = Search(initialState, initialState, 0, path, bound);
                 MaxCostEvaulated = Math.Max(MaxCostEvaulated, result);
                 if (result == FOUND) return path.Reverse().ToArray();
-                if (result == NO_SOLUTION) return null;
+                // TODO: how do we identify if we have not found a solution
+                if (result == bound) return null;
                 bound = result;
             }
         }
