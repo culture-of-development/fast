@@ -3,6 +3,7 @@ using System.Linq;
 using Xunit;
 
 using fast.search;
+using fast.search.problems;
 using Xunit.Abstractions;
 
 namespace fast.search.tests

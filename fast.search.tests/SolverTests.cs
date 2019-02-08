@@ -2,6 +2,7 @@ using System;
 using Xunit;
 
 using fast.search;
+using fast.search.problems;
 using System.Diagnostics;
 using System.Timers;
 using Xunit.Abstractions;

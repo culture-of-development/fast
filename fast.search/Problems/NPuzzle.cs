@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace fast.search
+namespace fast.search.problems
 {
     public class NPuzzleProblem : IProblem<NPuzzle>
     {
@@ -20,10 +20,11 @@ namespace fast.search
             this.initialState = initialState;
         }
 
-        public int ApplyAction(NPuzzle state, IProblemAction action)
+        public (NPuzzle, double) ApplyAction(NPuzzle state, IProblemAction action)
         {
-            state.Move(action);
-            return NPuzzle.StepCost;
+            var successor = state.Copy();
+            successor.Move(action);
+            return (successor, 1d);
         }
 
         public IEnumerable<IProblemAction> Expand(NPuzzle state)
@@ -44,10 +45,8 @@ namespace fast.search
         }
     }
 
-    public class NPuzzle : IProblemState<NPuzzle>, IEquatable<NPuzzle>
+    public class NPuzzle : IProblemState<NPuzzle>
     {
-        public const int StepCost = 1;
-
         public int NRows { get; private set; }
         public int NCols { get; private set; }
         private int totalCells;
@@ -174,9 +173,9 @@ namespace fast.search
 
         // TODO: move this elsewhere but right now the state is private
         // The Hamming distance in this case is the number of misplaced tiles
-        public static int HammingDistance(NPuzzle state)
+        public static double HammingDistance(NPuzzle state)
         {
-            int cost = 0;
+            double cost = 0d;
             ulong expected = 0UL;
             ulong uCells = (ulong)state.totalCells;
             var value = state.board;
@@ -193,9 +192,9 @@ namespace fast.search
             }
             return cost;
         }
-        public static int ManhattanDistance(NPuzzle state)
+        public static double ManhattanDistance(NPuzzle state)
         {
-            int cost = 0;
+            double cost = 0d;
             ulong uCells = (ulong)state.totalCells;
             var value = state.board;
             for(int i = 0; i < state.NRows; i++)
