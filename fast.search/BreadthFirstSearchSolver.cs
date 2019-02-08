@@ -33,8 +33,7 @@ namespace fast.search
                 if (problem.IsGoal(state)) return RebuildSolution(cameFrom, state);
                 foreach(var move in problem.Expand(state))
                 {
-                    var successor = state.Copy();
-                    int stepCost = problem.ApplyAction(successor, move);
+                    var (successor, stepCost) = problem.ApplyAction(state, move);
                     if (closedSet.Contains(successor)) continue;
                     // why is this 1 and not step cost? because that's how we enforce
                     // the BFS property of exploring on level fully before starting the next

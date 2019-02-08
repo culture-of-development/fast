@@ -41,8 +41,7 @@ namespace fast.search
                 if (problem.IsGoal(state)) return RebuildSolution(cameFrom, state);
                 foreach(var move in problem.Expand(state))
                 {
-                    var successor = state.Copy();
-                    int stepCost = problem.ApplyAction(successor, move);
+                    var (successor, stepCost) = problem.ApplyAction(state, move);
                     if (closedSet.Contains(successor)) continue;
                     var wasImprovement = 
                         openSet.PushOrImprove(

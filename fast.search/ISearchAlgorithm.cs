@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace fast.search
@@ -6,7 +7,7 @@ namespace fast.search
     {
     }
 
-    public interface IProblemState<TState>
+    public interface IProblemState<TState> : IEquatable<TState>
     {
         TState Copy();
     }
@@ -14,7 +15,7 @@ namespace fast.search
     public interface IProblem<TState>
         where TState : IProblemState<TState>
     {
-        int ApplyAction(TState state, IProblemAction action);
+        (TState, double) ApplyAction(TState state, IProblemAction action);
         bool IsGoal(TState state);
         IEnumerable<IProblemAction> Expand(TState state);
         TState GetInitialState();
