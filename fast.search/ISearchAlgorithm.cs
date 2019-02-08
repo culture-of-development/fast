@@ -9,7 +9,6 @@ namespace fast.search
 
     public interface IProblemState<TState> : IEquatable<TState>
     {
-        TState Copy();
     }
 
     public interface IProblem<TState>
