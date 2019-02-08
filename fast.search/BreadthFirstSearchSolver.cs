@@ -7,14 +7,14 @@ namespace fast.search
         where TState : IProblemState<TState>
     {
         public ulong StatesEvaluated { get; private set; }
-        public int MaxCostEvaulated { get; private set; }
+        public double MaxCostEvaulated { get; private set; }
 
         public IProblemAction[] Solve(IProblem<TState> problem)
         {
             StatesEvaluated = 0UL;
             MaxCostEvaulated = 0;
             
-            var openSet = new OpenSet<int, StateCost<TState>>();
+            var openSet = new OpenSet<double, StateCost<TState>>();
             var closedSet = new HashSet<TState>();
             var cameFrom = new Dictionary<TState, (TState parent, IProblemAction move)>();
             

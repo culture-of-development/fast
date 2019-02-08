@@ -8,11 +8,11 @@ namespace fast.search
         where TState : IProblemState<TState>
     {
         public ulong StatesEvaluated { get; private set; }
-        public int MaxCostEvaulated { get; private set; }
+        public double MaxCostEvaulated { get; private set; }
 
-        private Func<TState, int> heuristic;
+        private Func<TState, double> heuristic;
 
-        public AStarSearchSolver(Func<TState, int> heuristic)
+        public AStarSearchSolver(Func<TState, double> heuristic)
         {
             this.heuristic = heuristic;
         }
@@ -22,7 +22,7 @@ namespace fast.search
             StatesEvaluated = 0UL;
             MaxCostEvaulated = 0;
             
-            var openSet = new OpenSet<int, StateCost<TState>>();
+            var openSet = new OpenSet<double, StateCost<TState>>();
             var closedSet = new HashSet<TState>();
             var cameFrom = new Dictionary<TState, (TState parent, IProblemAction move)>();
             

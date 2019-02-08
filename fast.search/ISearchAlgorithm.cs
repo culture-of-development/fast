@@ -24,7 +24,7 @@ namespace fast.search
         where TState : IProblemState<TState>
     {
         ulong StatesEvaluated { get; }
-        int MaxCostEvaulated { get; }
+        double MaxCostEvaulated { get; }
         IProblemAction[] Solve(IProblem<TState> initial);
     }
 }

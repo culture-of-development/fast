@@ -5,10 +5,10 @@ namespace fast.search
     public struct StateCost<TState> : IEquatable<StateCost<TState>> 
         where TState : IProblemState<TState>
     {
-        public int Cost { get; private set; }
+        public double Cost { get; private set; }
         public TState State { get; private set; }
         
-        public StateCost(TState state, int cost)
+        public StateCost(TState state, double cost)
         {
             Cost = cost;
             State = state;

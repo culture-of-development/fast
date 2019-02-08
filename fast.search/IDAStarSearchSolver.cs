@@ -8,17 +8,17 @@ namespace fast.search
         where TState : IProblemState<TState>, IEquatable<TState>
     {
         public ulong StatesEvaluated { get; private set; }
-        public int MaxCostEvaulated { get; private set; }
+        public double MaxCostEvaulated { get; private set; }
 
-        private Func<TState, int> heuristic;
+        private Func<TState, double> heuristic;
 
-        public IDAStarSearchSolver(Func<TState, int> heuristic)
+        public IDAStarSearchSolver(Func<TState, double> heuristic)
         {
             this.heuristic = heuristic;
         }
 
-        const int FOUND = -1;
         const int NO_SOLUTION = -2;
+        const double FOUND = -1;
         private IProblem<TState> problem;
         public IProblemAction[] Solve(IProblem<TState> problem)
         {
@@ -27,33 +27,33 @@ namespace fast.search
             MaxCostEvaulated = 0;
             
             var initialState = problem.GetInitialState();
-            int bound = heuristic(initialState);
+            double bound = heuristic(initialState);
             var path = new Stack<IProblemAction>(10000);
             while(true)
             {
-                int result = Search(initialState, initialState, 0, path, bound);
+                double result = Search(initialState, initialState, 0, path, bound);
                 MaxCostEvaulated = Math.Max(MaxCostEvaulated, result);
                 if (result == FOUND) return path.Reverse().ToArray();
                 if (result == NO_SOLUTION) return null;
                 bound = result;
             }
         }
-        private int Search(TState state, TState parent, int pathCost, Stack<IProblemAction> path, int bound)
+        private double Search(TState state, TState parent, double pathCost, Stack<IProblemAction> path, double bound)
         {
-            int f = pathCost + heuristic(state);
+            var f = pathCost + heuristic(state);
             StatesEvaluated++;
             if (f > bound) return f;
             if (problem.IsGoal(state)) return FOUND;
-            int min = int.MaxValue;
+            var min = double.MaxValue;
             var actions = problem.Expand(state);
             foreach(var action in actions)
             {
-                var successor = state.Copy();
-                int successorPathCost = pathCost + problem.ApplyAction(successor, action);
+                var (successor, stepCost) = problem.ApplyAction(state, action);
+                var successorPathCost = pathCost + stepCost;
                 // TODO: so many assumptions here
                 if (successor.Equals(parent)) continue;
                 path.Push(action);
-                int result = Search(successor, state, successorPathCost, path, bound);
+                var result = Search(successor, state, successorPathCost, path, bound);
                 if (result == FOUND) return FOUND;
                 min = Math.Min(min, result);
                 path.Pop();
