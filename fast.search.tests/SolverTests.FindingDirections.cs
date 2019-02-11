@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,20 +26,23 @@ namespace fast.search.tests
             TestSolver(solver, problem, 418);
         }
 
-        // [Fact]
-        // public void TestFindingDirectionsAStarSearchManhattanDistance()
-        // {
-        //     var solver = new AStarSearchSolver<NPuzzle>(NPuzzle.ManhattanDistance);
-        //     var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1"); int expected = 27;
-        //     TestSolver(solver, problem, expected);
-        // }
+        [Fact]
+        public void TestFindingDirectionsAStarSearchStraightLineDistanceHeuristic()
+        {
+            var heuristic = StraightLineToBucharestHeuristic();
+            var solver = new AStarSearchSolver<FindingDirectionsState>(heuristic);
+            var problem = GetRomaniaProblem();
+            TestSolver(solver, problem, 418);
+        }
 
-        // [Fact]
-        // public void TestFindingDirectionsIDAStarSearchManhattanDistance()
-        // {
-        //     var solver = new IDAStarSearchSolver<NPuzzle>(NPuzzle.ManhattanDistance);
-        //     TestSolver(solver, problem, expected);
-        // }
+        [Fact]
+        public void TestFindingDirectionsIDAStarSearchStraightLineDistanceHeuristic()
+        {
+            var heuristic = StraightLineToBucharestHeuristic();
+            var solver = new IDAStarSearchSolver<FindingDirectionsState>(heuristic);
+            var problem = GetRomaniaProblem();
+            TestSolver(solver, problem, 418);
+        }
 
 
 
@@ -64,6 +68,15 @@ namespace fast.search.tests
             public FindingDirectionsState From { get; set; }
             public FindingDirectionsState To { get; set; }
             public double Weight { get; set; }
+        }
+
+        Func<FindingDirectionsState, double> StraightLineToBucharestHeuristic()
+        {
+            var distances = File.ReadAllLines("RomaniaGraphBucharestHeuristic.csv")
+                .Skip(1) // header
+                .Select(m => m.Split(','))
+                .ToDictionary(m => m[0], m => double.Parse(m[1]));
+            return (FindingDirectionsState location) => distances[location.LocationName];
         }
     }
 }

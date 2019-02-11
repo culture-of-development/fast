@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Update="RomaniaGraph.csv" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="*.csv" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
