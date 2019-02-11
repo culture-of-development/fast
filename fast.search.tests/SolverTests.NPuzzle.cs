@@ -6,7 +6,7 @@ namespace fast.search.tests
     partial class SolverTests
     {
         [Fact]
-        public void TestBreadthFirstSearch()
+        public void TestNPuzzleBreadthFirstSearch()
         {
             var solver = new BreadthFirstSearchSolver<NPuzzle>();
             var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1");
@@ -15,7 +15,7 @@ namespace fast.search.tests
         }
 
         [Fact]
-        public void TestAStarSearchHammingDistance()
+        public void TestNPuzzleAStarSearchHammingDistance()
         {
             var solver = new AStarSearchSolver<NPuzzle>(NPuzzle.HammingDistance);
             var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1");
@@ -24,7 +24,7 @@ namespace fast.search.tests
         }
 
         [Fact]
-        public void TestAStarSearchManhattanDistance()
+        public void TestNPuzzleAStarSearchManhattanDistance()
         {
             var solver = new AStarSearchSolver<NPuzzle>(NPuzzle.ManhattanDistance);
             var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1"); int expected = 27;
@@ -35,7 +35,7 @@ namespace fast.search.tests
         }
 
         [Fact]
-        public void TestIDAStarSearchManhattanDistance()
+        public void TestNPuzzleIDAStarSearchManhattanDistance()
         {
             var solver = new IDAStarSearchSolver<NPuzzle>(NPuzzle.ManhattanDistance);
             //var problem = new NPuzzleProblem(3, 3, "8 6 7 2 5 4 3 0 1"); int expected = 27;

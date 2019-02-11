@@ -12,6 +12,7 @@ Craiova,Rimnicu Vilcea,146
 Rimnicu Vilcea,Sibiu,80
 Craiova,Pitesti,138
 Pitesti,Rimnicu Vilcea,97
+Pitesti,Bucharest,101
 Fagaras,Sibiu,99
 Bucharest,Fagaras,211
 Bucharest,Giurgiu,90
@@ -34,6 +35,7 @@ Rimnicu Vilcea,Craiova,146
 Sibiu,Rimnicu Vilcea,80
 Pitesti,Craiova,138
 Rimnicu Vilcea,Pitesti,97
+Bucharest,Pitesti,101
 Sibiu,Fagaras,99
 Fagaras,Bucharest,211
 Giurgiu,Bucharest,90

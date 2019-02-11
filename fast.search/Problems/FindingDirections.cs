@@ -35,9 +35,28 @@ namespace fast.search.problems
         public string LocationName { get; private set; }
         public ulong NodeId { get; private set; }
 
+        public FindingDirectionsState(ulong nodeId, string name)
+        {
+            this.LocationName = name;
+            this.NodeId = nodeId;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.NodeId.GetHashCode();
+        }
+        public override bool Equals(object other)
+        {
+            return Equals((FindingDirectionsState)other);
+        }
         public bool Equals(FindingDirectionsState other)
         {
             return this.NodeId == other.NodeId;
+        }
+
+        public override string ToString()
+        {
+            return this.LocationName + ", " + this.NodeId;
         }
     }
 }

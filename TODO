@@ -6,7 +6,7 @@ animation showing how to solve it
 
 
 remeber:
-    dotnet test --filter "FullyQualifiedName=fast.search.tests.SolverTests.TestIDAStarSearchManhattanDistance"
+    dotnet test --filter "FullyQualifiedName=fast.search.tests.SolverTests.TestFindingDirectionsBreadthFirstSearch"
 
 
 DONE:

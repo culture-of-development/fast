@@ -55,15 +55,17 @@ namespace fast.search.tests
                 output.WriteLine("Initial State ----------------");
                 output.WriteLine(state.ToString());
                 int i = 0;
+                double stepCost, totalCost = 0d;
                 foreach(var move in solution)
                 {
                     i++;
-                    problem.ApplyAction(state, move);
+                    (state, stepCost) = problem.ApplyAction(state, move);
+                    totalCost += stepCost;
                 }
-                output.WriteLine("Final State ({0} moves) ----------------", i);
+                output.WriteLine("Final State ({0} moves, {1} cost) ----------------", i, totalCost);
                 output.WriteLine(state.ToString());
                 Assert.True(problem.IsGoal(state), "Non-goal state claimed to be goal.");
-                Assert.True(optimalCost == i, "Found a non optimal cost: expected = " + optimalCost + "; actual = " + i);
+                Assert.True(optimalCost == totalCost, "Found a non optimal cost: expected = " + optimalCost + "; actual = " + totalCost);
             }
         }
     }

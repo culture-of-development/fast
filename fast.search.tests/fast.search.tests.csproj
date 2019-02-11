@@ -17,4 +17,8 @@
     <ProjectReference Include="..\fast.search\fast.search.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Update="RomaniaGraph.csv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
