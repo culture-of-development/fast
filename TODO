@@ -11,23 +11,3 @@ remeber:
 
 DONE:
 ----------------
-2019-02-08
-implement FindingDirectionsProblem
-fix BreadthFirstSearch copy/paste bug
-
-
-2019-02-07
-change the goal state to match the literature
-OpenSet returns true/false for was improvement
-make the solver generic so it can solve any problem
-offstream: 
-    implement IDA*/improve the nodes explored per sec by orders of magnitude
-    ^ improve the nodes explored per sec by orders of magnitude
-
-
-
-2019-02-06
-Got some really nice chatting going on and learned a ton
-    specifically closures over set with operations: look more into this @SGK7
-        https://www.youtube.com/watch?v=PGPRBBMwCXk
-    I'm using the wrong goal state, compared to whats in the literature
