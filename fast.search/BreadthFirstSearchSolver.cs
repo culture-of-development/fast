@@ -37,7 +37,7 @@ namespace fast.search
                     if (closedSet.Contains(successor)) continue;
                     // why is this 1 and not step cost? because that's how we enforce
                     // the BFS property of exploring on level fully before starting the next
-                    var wasImprovement = openSet.PushOrImprove(cost + stepCost, new StateCost<TState>(successor, cost + stepCost));
+                    var wasImprovement = openSet.PushOrImprove(cost + 1, new StateCost<TState>(successor, cost + 1));
                     if (wasImprovement) cameFrom[successor] = (state, move); 
                 }
             }
