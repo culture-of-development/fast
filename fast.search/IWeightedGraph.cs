@@ -48,6 +48,7 @@ namespace fast.search
 
         public IEnumerable<TNode> GetNeighbors(TNode node)
         {
+            // TODO: this should throw if the node is not in the graph at all
             if (!edges.ContainsKey(node.NodeId)) return new TNode[0];
             return edges[node.NodeId].Values.Select(m => m.node);
         }
