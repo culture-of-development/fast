@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\fast.search\fast.search.csproj" />
+    <ProjectReference Include="..\fast.helpers\fast.helpers.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">

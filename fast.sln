@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search", "fast.search\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search.tests", "fast.search.tests\fast.search.tests.csproj", "{4CB31D15-61C4-4346-B616-09B1AE5B95A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.helpers", "fast.helpers\fast.helpers.csproj", "{090652C3-22A5-481C-B490-A14CCE8FDE9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +60,17 @@ Global
 		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Release|x64.Build.0 = Release|Any CPU
 		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Release|x86.ActiveCfg = Release|Any CPU
 		{4CB31D15-61C4-4346-B616-09B1AE5B95A5}.Release|x86.Build.0 = Release|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Debug|x64.Build.0 = Debug|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Debug|x86.Build.0 = Debug|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Release|x64.ActiveCfg = Release|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Release|x64.Build.0 = Release|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Release|x86.ActiveCfg = Release|Any CPU
+		{090652C3-22A5-481C-B490-A14CCE8FDE9F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
