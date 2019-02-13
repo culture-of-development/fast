@@ -233,6 +233,7 @@ namespace fast.search.problems
 
         public (int, bool) IsSolvable()
         {
+            // SGK7: http://cseweb.ucsd.edu/~ccalabro/essays/15_puzzle.pdf
             int inversions = 0;
             ulong b = this.board;
             while(b > 0UL)
