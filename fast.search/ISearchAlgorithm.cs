@@ -19,6 +19,7 @@ namespace fast.search
         bool IsGoal(TState state);
         IEnumerable<IProblemAction> Expand(TState state);
         TState GetInitialState();
+        TState GetGoalState();
     }
 
     public interface ISearchAlgorithm<TState>

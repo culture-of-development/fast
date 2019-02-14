@@ -27,6 +27,7 @@ namespace fast.search.problems
 
         public IEnumerable<IProblemAction> Expand(FindingDirectionsState state) => map.GetNeighbors(state);
         public FindingDirectionsState GetInitialState() => start;
+        public FindingDirectionsState GetGoalState() => end;
         public bool IsGoal(FindingDirectionsState state) => state == end;
     }
 

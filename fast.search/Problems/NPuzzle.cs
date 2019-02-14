@@ -39,6 +39,11 @@ namespace fast.search.problems
             return new NPuzzle(NRows, NCols);
         }
 
+        public NPuzzle GetGoalState()
+        {
+            return new NPuzzle(this.NRows, this.NCols);
+        }
+
         public bool IsGoal(NPuzzle state)
         {
             return state.IsGoal();
@@ -105,7 +110,7 @@ namespace fast.search.problems
             }
         }
 
-        private static ulong GenerateGoalState(int nrows, int ncols)
+        public static ulong GenerateGoalState(int nrows, int ncols)
         {
             ulong maxTileValue = (ulong)(nrows * ncols - 1);
             ulong result = 0UL;
