@@ -4,3 +4,7 @@ obj/
 
 # vs code
 .vscode/
+
+
+*.osm
+*.osm.pbf
