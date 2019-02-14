@@ -37,7 +37,9 @@ namespace fast.search
                 .GroupBy(m => m.From)
                 .ToDictionary(
                     m => m.Key.NodeId,
-                    m => m.ToDictionary(j => j.To.NodeId, j => (j.To, j.Weight))
+                    // TODO: remove this logic, deduping edges should throw, revert this
+                    m => m.GroupBy(j => j.To.NodeId)
+                        .ToDictionary(j => j.Key, j => { var a = j.OrderBy(t => t.Weight).First(); return (a.To, a.Weight); })
                 );
         }
         
