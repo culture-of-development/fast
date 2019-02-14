@@ -61,6 +61,7 @@ namespace fast.search.tests
                     i++;
                     (state, stepCost) = problem.ApplyAction(state, move);
                     totalCost += stepCost;
+                    output.WriteLine(state.ToString());
                 }
                 output.WriteLine("Final State ({0} moves, {1} cost) ----------------", i, totalCost);
                 output.WriteLine(state.ToString());

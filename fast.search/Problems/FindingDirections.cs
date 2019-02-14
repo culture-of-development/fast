@@ -33,11 +33,15 @@ namespace fast.search.problems
 
     public class FindingDirectionsState : IProblemState<FindingDirectionsState>, IProblemAction, IGraphNode
     {
+        public double Latitude { get; private set; }
+        public double Longitude { get; private set; }
         public string LocationName { get; private set; }
         public ulong NodeId { get; private set; }
 
-        public FindingDirectionsState(ulong nodeId, string name)
+        public FindingDirectionsState(ulong nodeId, string name = null, double? latitude = null, double? longitude = null)
         {
+            this.Latitude = latitude ?? default(double);
+            this.Longitude = longitude ?? default(double);
             this.LocationName = name;
             this.NodeId = nodeId;
         }
@@ -57,7 +61,7 @@ namespace fast.search.problems
 
         public override string ToString()
         {
-            return this.LocationName + ", " + this.NodeId;
+            return $"{this.LocationName} ({this.Latitude}, {this.Longitude}), {this.NodeId}";
         }
     }
 }
