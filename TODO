@@ -1,6 +1,9 @@
 TODO: stream
 ----------------
-extract Lima, Peru roadways: https://download.bbbike.org/osm/bbbike/Lima/
+make the OSM graph extraction work for 1 way streets
+get rid of the hardcoded path for datasets from everywhere that uses it (currently in OsmTests.cs)
+find a way to grab the nodes out of the map so we can start blank
+remove IProblem.GetGoalState, the algorithm doesnt need it, it's a helper for building problems only
 refactor the NPuzzleProblem and NPuzzle because all the logic is in NPuzzle currently
 implement the tests in the TODOs for NPuzzle
 animation showing how to solve it
@@ -12,3 +15,5 @@ remeber:
 
 DONE:
 ----------------
+2019-02-13
+extract Lima, Peru roadways: https://download.bbbike.org/osm/bbbike/Lima/
