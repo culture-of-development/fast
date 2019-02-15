@@ -79,7 +79,10 @@
                 }
                 console.log(response);
             })
-            .then(showResultsSegment);
+            .then(data => {
+                console.log("locations: " + data.ProblemDefineTime + ", solve: " + data.DirectionsFindTime);
+                showResultsSegment(data.points);
+            });
         }
     </script>
   </head>

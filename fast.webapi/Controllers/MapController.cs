@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using fast.helpers;
 using fast.search;
 using fast.search.problems;
+using System.Diagnostics;
 
 namespace fast.webapi.Controllers
 {
@@ -36,24 +37,34 @@ namespace fast.webapi.Controllers
         }
 
         [HttpGet("directions")]
-        public ActionResult<LatLng[]> GetDirections(double latFrom, double lonFrom, double latTo, double lonTo)
+        public ActionResult<DirectionsResult> GetDirections(double latFrom, double lonFrom, double latTo, double lonTo)
         {
+            var timer = Stopwatch.StartNew();
             var problem = OpenStreetMapDataHelper.BuildMapProblem(mapGraph, locations, latFrom, lonFrom, latTo, lonTo);
             var goal = problem.GetGoalState();
             Func<FindingDirectionsState, double> heuristic = from => 
                 DistanceHelper.Haversine(from.Latitude, from.Longitude, goal.Latitude, goal.Longitude);
             var solver = new AStarSearchSolver<FindingDirectionsState>(heuristic);
+            var locationFinding = timer.Elapsed.TotalMilliseconds;
+            timer = Stopwatch.StartNew();
             var steps = solver.Solve(problem)
                 .Cast<FindingDirectionsState>()
                 .Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude })
                 .ToArray();
-            return steps;
+            var itemsTime = timer.Elapsed.TotalMilliseconds;
+            return new DirectionsResult { points = steps, ProblemDefineTime = locationFinding, DirectionsFindTime = itemsTime };
         }
 
         public class LatLng
         {
             public double lat { get; set; }
             public double lng { get; set; }
+        }
+        public class DirectionsResult
+        {
+            public IEnumerable<LatLng> points { get; set; }
+            public double ProblemDefineTime { get; set; }
+            public double DirectionsFindTime { get; set; }
         }
     }
 }

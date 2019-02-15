@@ -41,6 +41,7 @@ namespace fast.helpers
         {
             FindingDirectionsState from = null, to = null;
             double distFrom = double.MaxValue, distTo = double.MaxValue;
+            // TODO: this is slow as hell, make it way faster, maybe some indexing?
             foreach(var node in nodes)
             {
                 if (from == null)
@@ -92,6 +93,7 @@ namespace fast.helpers
                     "tertiary_link",
                 }
             );
+            var onewayIdentifiers = new HashSet<string>(new [] { "yes", "1", "true" });
             var nodes = new Dictionary<long, FindingDirectionsState>();
             var edges = new List<IWeightedGraphEdge<FindingDirectionsState, double>>();
             var graphNodes = new HashSet<FindingDirectionsState>();
@@ -118,6 +120,7 @@ namespace fast.helpers
                         if (!recreationalVechicleRoadTags.Contains(highwayType)) continue;
                         var way = (Way)element;
                         if (way.Nodes.Length < 2) continue;
+                        bool isOneWay = element.Tags.ContainsKey("oneway") && onewayIdentifiers.Contains(element.Tags["oneway"]);
                         for(int i = 1; i < way.Nodes.Length; i++)
                         {
                             var a = nodes[way.Nodes[i-1]];
@@ -125,9 +128,8 @@ namespace fast.helpers
                             graphNodes.Add(a);
                             graphNodes.Add(b);
                             var distance = DistanceHelper.Haversine(a.Latitude, a.Longitude, b.Latitude, b.Longitude);
-                            // TODO: make this work for one way streets
                             edges.Add(new OsmEdge(a, b, distance));
-                            edges.Add(new OsmEdge(b, a, distance));
+                            if (!isOneWay) edges.Add(new OsmEdge(b, a, distance));
                         }
                         break;
                     case OsmGeoType.Relation:
