@@ -29,6 +29,16 @@ namespace fast.helpers
         )
         {
             var (graph, nodes) = ExtractMapGraph(osm_pbf_filename);
+            return BuildMapProblem(graph, nodes, latFrom, lonFrom, latTo, lonTo);
+        }
+
+        public static FindingDirectionsProblem BuildMapProblem(
+            IWeightedGraph<FindingDirectionsState, double> graph, 
+            HashSet<FindingDirectionsState> nodes,
+            double latFrom, double lonFrom, 
+            double latTo, double lonTo
+        )
+        {
             FindingDirectionsState from = null, to = null;
             double distFrom = double.MaxValue, distTo = double.MaxValue;
             foreach(var node in nodes)
@@ -59,8 +69,8 @@ namespace fast.helpers
         }
 
         // TODO: make this look like an actual function signature
-        private static
-            (AdjacencyListWeightedGraph<FindingDirectionsState, double> graph, HashSet<FindingDirectionsState> nodes)
+        public static
+            (IWeightedGraph<FindingDirectionsState, double> graph, HashSet<FindingDirectionsState> nodes)
             ExtractMapGraph(string osm_pbf_filename)
         {
             var recreationalVechicleRoadTags = new HashSet<string>(

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- https://stackoverflow.com/a/24511232/178082 -->
+    <title>Add Marker to Map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script>
+        var map;
+        function initialize() {
+            var mapOptions = {
+                zoom: 12,
+                center: new google.maps.LatLng(-12.052618892946983,-77.0599418376168)
+            };
+            map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+            // https://stackoverflow.com/a/8026984/178082
+            var pointFrom, pointTo;
+            google.maps.event.addListener(map, 'click', function( event ){
+                console.log( "" + event.latLng.lat()+","+event.latLng.lng() ); 
+                pointFrom = pointTo;
+                pointTo = event.latLng;
+                if (pointFrom) {
+                    getDirections(pointFrom, pointTo);
+                }
+            });
+        }
+        google.maps.event.addDomListener(window, 'load', initialize);
+        function addMarker(lat, lon) {
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(lat,lon)
+            });
+            marker.setMap(map);
+        }
+        //https://developers.google.com/maps/documentation/javascript/shapes
+        function addLineSegment(lat1, lon1, lat2, lon2) {
+            var points = [
+                {lat: lat1, lng: lon1},
+                {lat: lat2, lng: lon2}
+            ];
+            var lineSegment = new google.maps.Polyline({
+                path: points,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+            lineSegment.setMap(map);
+        }
+        var currentPath = null;
+        function showResultsSegment(points) {
+            if (currentPath != null) {
+                currentPath.setMap(null);
+            }
+            currentPath = new google.maps.Polyline({
+                path: points,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+            currentPath.setMap(map);
+        }
+        function getDirections(pointFrom, pointTo) {
+            var query = "latFrom=" + pointFrom.lat() + "&lonFrom=" + pointFrom.lng() +
+                        "&latTo=" + pointTo.lat() + "&lonTo=" + pointTo.lng();
+            fetch("/api/map/directions?" + query)
+            .then(function(response) {
+                if (response.ok)
+                {
+                    return response.json();
+                }
+                console.log(response);
+            })
+            .then(showResultsSegment);
+        }
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+</html>
