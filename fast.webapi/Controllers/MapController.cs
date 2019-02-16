@@ -21,7 +21,7 @@ namespace fast.webapi.Controllers
         public static void InitializeMapData()
         {
             Console.WriteLine("Loading map data");
-            var filename = @"I:\culture-of-development\fast\datasets\lima-peru-osm\Lima.osm.pbf";
+            var filename = Path.Combine(@"../fast.datasets/Glasgow.osm.pbf");
             var (graph, nodes) = OpenStreetMapDataHelper.ExtractMapGraph(filename);
             MapController.mapGraph = graph;
             MapController.locations = nodes;
@@ -29,10 +29,10 @@ namespace fast.webapi.Controllers
         }
 
         // GET api/map/{string}
-        [HttpGet("{name}")]
-        public IActionResult Get(string name)
+        [HttpGet()]
+        public IActionResult Show()
         {
-            var filename = Path.Combine(Directory.GetCurrentDirectory(), "Static", $"map-{name}.html");
+            var filename = Path.Combine(Directory.GetCurrentDirectory(), "Static", $"map.html");
             return PhysicalFile(filename, "text/html");
         }
 
