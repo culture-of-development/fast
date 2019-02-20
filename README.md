@@ -2,11 +2,11 @@
 
 This is a project for collecting the AI tools we build on my stream at [https://twitch.tv/nick_larsen](https://twitch.tv/nick_larsen).
 
-The fun parts are the [map and some work on making BLAS fast in dot net.
+The fun parts are the map and some work on making BLAS fast in dot net.
 
 ![map directions](wiki-content/map-directions.gif)
 
-### Getting it running
+### Getting the directions finding map demo running
 
 #### Step 1: download some data to run the map
 
@@ -24,11 +24,11 @@ The `map_data_city_filename` in fast.webapi/Startup.cs constant tells the app wh
 
 #### Step 3: dotnet run
 
-Browse to the fast.webapi folder in a terminal and then fire off a `dotnet run` to get it started.  As it loads, it will tell you when it is done loading the map data.
+Browse to the fast.webapi folder in a terminal and then fire off a `dotnet run` to get it started.  As it loads, it will tell you when it is done loading the map data.  If it throws an error, please fell free to post an issue on the repo with full details (copy/pasted) from the terminal output.
 
 #### Step 4: visit the site
 
-Once it's done loading, you should be able to hit the site locally at `https://localhost:5000` or whatever it tells you in the terminal.  If it throws an error, please fell free to post an issue on the repo with full details (copy/pasted) from the terminal output.
+Once it's done loading, you should be able to hit the site locally at `https://localhost:5000` or whatever it tells you in the terminal.
 
 #### Step 5: find your city and start clicking
 
