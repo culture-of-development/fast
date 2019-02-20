@@ -44,7 +44,8 @@ namespace fast.webapi
             app.UseHttpsRedirection();
             app.UseMvc();
 
-            Controllers.MapController.InitializeMapData();
+            const string map_data_city_filename = "Glasgow";
+            Controllers.MapController.InitializeMapData(map_data_city_filename);
         }
     }
 }

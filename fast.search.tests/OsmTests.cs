@@ -12,26 +12,26 @@ namespace fast.search.tests
     {
         public OsmTests(ITestOutputHelper output) : base(output) { }
 
+        public const string LimaFilename = @"../../../../datasets/Lima/Lima.osm.pbf";
+
         [Fact]
         public void TestReadLimaPeru()
         {
-            var limaFilename = @"I:\culture-of-development\fast\datasets\lima-peru-osm\Lima.osm.pbf";
-            var osmData = OpenStreetMapDataHelper.ViewAllFileData(limaFilename);
+            var osmData = OpenStreetMapDataHelper.ViewAllFileData(LimaFilename);
             int i = 0;
             foreach(var item in osmData)
             {
                 output.WriteLine(item);
                 i++;
-                if (i >= 1000) break;
+                if (i >= 10) break;
             }
         }
 
         [Fact]
         public void TestBuildGraphLimaPeru()
         {
-            var limaFilename = @"I:\culture-of-development\fast\datasets\lima-peru-osm\Lima.osm.pbf";
             var lima = OpenStreetMapDataHelper.ExtractMapProblem(
-                    limaFilename, -12.073457334109781, -77.16832519640246,
+                    LimaFilename, -12.073457334109781, -77.16832519640246,
                     -12.045889755060621,-77.04266126523356
                 );
         }

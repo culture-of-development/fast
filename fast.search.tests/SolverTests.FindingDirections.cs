@@ -86,7 +86,7 @@ namespace fast.search.tests
         [Fact]
         public void TestFindingDirectionsAStarSearchLimaStraightLineDistanceHeuristic()
         {
-            var filename = @"I:\culture-of-development\fast\datasets\lima-peru-osm\Lima.osm.pbf";
+            var filename = @"../../../../datasets/Lima/Lima.osm.pbf";
             var problem = OpenStreetMapDataHelper.ExtractMapProblem(
                     filename, 
                     -12.073457334109781, -77.16832519640246,

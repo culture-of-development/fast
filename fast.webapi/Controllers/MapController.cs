@@ -18,10 +18,10 @@ namespace fast.webapi.Controllers
         private static IWeightedGraph<FindingDirectionsState, double> mapGraph;
         private static HashSet<FindingDirectionsState> locations;
 
-        public static void InitializeMapData()
+        public static void InitializeMapData(string city_name)
         {
             Console.WriteLine("Loading map data");
-            var filename = Path.Combine(@"../fast.datasets/Glasgow.osm.pbf");
+            var filename = Path.Combine($@"../datasets/{city_name}/{city_name}.osm.pbf");
             var (graph, nodes) = OpenStreetMapDataHelper.ExtractMapGraph(filename);
             MapController.mapGraph = graph;
             MapController.locations = nodes;
