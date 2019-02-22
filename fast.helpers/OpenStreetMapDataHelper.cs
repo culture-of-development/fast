@@ -5,6 +5,8 @@ using fast.search;
 using fast.search.problems;
 using OsmSharp;
 using OsmSharp.Streams;
+using KdTree;
+using KdTree.Math;
 
 namespace fast.helpers
 {
@@ -29,42 +31,39 @@ namespace fast.helpers
         )
         {
             var (graph, nodes) = ExtractMapGraph(osm_pbf_filename);
-            return BuildMapProblem(graph, nodes, latFrom, lonFrom, latTo, lonTo);
+            var nodeLocator = MakeNodeLocator(nodes);
+            return BuildMapProblem(graph, nodeLocator, latFrom, lonFrom, latTo, lonTo);
+        }
+
+        public static KdTree<double, FindingDirectionsState> MakeNodeLocator(HashSet<FindingDirectionsState> nodes)
+        {
+            var tree = new KdTree<double, FindingDirectionsState>(2, new DoubleGeoMath());
+            foreach(var node in nodes)
+            {
+                tree.Add(new[] { node.Latitude, node.Longitude }, node);
+            }
+            return tree;
+        }
+        [Serializable]
+        public class DoubleGeoMath : DoubleMath
+        {
+            public override double DistanceSquaredBetweenPoints(double[] a, double[] b)
+            {
+                double dst = DistanceHelper.Haversine(a[0], a[1], b[0], b[1]);
+                return (float)(dst * dst);
+            }
         }
 
         public static FindingDirectionsProblem BuildMapProblem(
             IWeightedGraph<FindingDirectionsState, double> graph, 
-            HashSet<FindingDirectionsState> nodes,
+            // TODO: swap this out for something that isn't a dependency
+            KdTree<double, FindingDirectionsState> nodeLocator,
             double latFrom, double lonFrom, 
             double latTo, double lonTo
         )
         {
-            FindingDirectionsState from = null, to = null;
-            double distFrom = double.MaxValue, distTo = double.MaxValue;
-            // TODO: this is slow as hell, make it way faster, maybe some indexing?
-            foreach(var node in nodes)
-            {
-                if (from == null)
-                {
-                    from = node;
-                    distFrom = DistanceHelper.Haversine(latFrom, lonFrom, node.Latitude, node.Longitude);
-                    to = node;
-                    distTo = DistanceHelper.Haversine(latTo, lonTo, node.Latitude, node.Longitude);
-                    continue;
-                }
-                var nodeDistFrom = DistanceHelper.Haversine(latFrom, lonFrom, node.Latitude, node.Longitude);
-                if (nodeDistFrom < distFrom)
-                {
-                    distFrom = nodeDistFrom;
-                    from = node;
-                }
-                var nodeDistTo = DistanceHelper.Haversine(latTo, lonTo, node.Latitude, node.Longitude);
-                if (nodeDistTo < distTo)
-                {
-                    distTo = nodeDistTo;
-                    to = node;
-                }
-            }
+            var from = nodeLocator.GetNearestNeighbours(new[] { latFrom, lonFrom }, 1)[0].Value;
+            var to = nodeLocator.GetNearestNeighbours(new[] { latTo, lonTo }, 1)[0].Value;
             var problem = new FindingDirectionsProblem(graph, from, to);
             return problem;
         }

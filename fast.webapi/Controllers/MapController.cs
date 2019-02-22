@@ -8,6 +8,7 @@ using fast.helpers;
 using fast.search;
 using fast.search.problems;
 using System.Diagnostics;
+using KdTree;
 
 namespace fast.webapi.Controllers
 {
@@ -16,7 +17,7 @@ namespace fast.webapi.Controllers
     public class MapController : ControllerBase
     {
         private static IWeightedGraph<FindingDirectionsState, double> mapGraph;
-        private static HashSet<FindingDirectionsState> locations;
+        private static KdTree<double, FindingDirectionsState> locations;
 
         public static void InitializeMapData(string city_name)
         {
@@ -24,8 +25,9 @@ namespace fast.webapi.Controllers
             var filename = Path.Combine($@"../datasets/{city_name}/{city_name}.osm.pbf");
             var (graph, nodes) = OpenStreetMapDataHelper.ExtractMapGraph(filename);
             MapController.mapGraph = graph;
-            MapController.locations = nodes;
+            MapController.locations = OpenStreetMapDataHelper.MakeNodeLocator(nodes);
             Console.WriteLine("Map data loaded");
+            Console.WriteLine("    Total map nodes: " + locations.Count);
         }
 
         // GET api/map/{string}
@@ -52,7 +54,7 @@ namespace fast.webapi.Controllers
                 .Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude })
                 .ToArray();
             var itemsTime = timer.Elapsed.TotalMilliseconds;
-            return new DirectionsResult { points = steps, ProblemDefineTime = locationFinding, DirectionsFindTime = itemsTime };
+            return new DirectionsResult { points = steps, problemDefineTime = locationFinding, directionsFindTime = itemsTime };
         }
 
         public class LatLng
@@ -63,8 +65,8 @@ namespace fast.webapi.Controllers
         public class DirectionsResult
         {
             public IEnumerable<LatLng> points { get; set; }
-            public double ProblemDefineTime { get; set; }
-            public double DirectionsFindTime { get; set; }
+            public double problemDefineTime { get; set; }
+            public double directionsFindTime { get; set; }
         }
     }
 }
