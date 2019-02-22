@@ -4,8 +4,9 @@ import os, argparse, urllib2
 
 def download_osm_pbf(city_name):
     # https://stackoverflow.com/a/22776/178082
-    directory = os.getcwd() + "/" + city_name
-    file_name = directory + "/" + city_name + ".osm.pbf"
+    # SGK7 2019-02-22 os.path.join
+    directory = os.path.join(os.getcwd(), city_name)
+    file_name = os.path.join(directory, city_name + ".osm.pbf")
     url = "https://download.bbbike.org/osm/bbbike/{0}/{0}.osm.pbf".format(city_name)
 
     print("downloading: " + city_name)

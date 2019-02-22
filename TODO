@@ -2,7 +2,7 @@ TODO: stream
 ----------------
 abstract away the KdTree so we only need it in one place instead of webapi and helpers
 extract graph model from OSM so we don't have to do it every time
-improve perf on locating nearest point, set a threshold on nearest point as well
+set a threshold on nearest point as well
 remove IProblem.GetGoalState, the algorithm doesnt need it, it's a helper for building problems only
 refactor the NPuzzleProblem and NPuzzle because all the logic is in NPuzzle currently
 implement the tests in the TODOs for NPuzzle
@@ -15,6 +15,10 @@ remeber:
 
 DONE:
 ----------------
+2019-02-22
+improve perf on locating nearest point
+
+
 2019-02-20
 write a script to get the data needed for the lima map
 get rid of the hardcoded path for datasets from everywhere that uses it (currently in OsmTests.cs)

@@ -1,5 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
+using fast.search;
+using fast.search.problems;
 
 namespace fast.helpers
 {
