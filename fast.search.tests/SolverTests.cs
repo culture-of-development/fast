@@ -14,7 +14,7 @@ namespace fast.search.tests
         public SolverTests(ITestOutputHelper output) : base(output) { }
         
         // optimal cost of -1 represents no solution!
-        private void TestSolver<TProblemState>(ISearchAlgorithm<TProblemState> solver, IProblem<TProblemState> problem, int optimalCost)
+        private void TestSolver<TProblemState>(ISearchAlgorithm<TProblemState> solver, IProblem<TProblemState> problem, double optimalCost)
             where TProblemState : IProblemState<TProblemState>
         {
             output.WriteLine(solver.ToString());
@@ -47,7 +47,7 @@ namespace fast.search.tests
 
             if (solution == null)
             {
-                Assert.True(optimalCost == -1, "Found no solution but one should exist.");
+                Assert.True(optimalCost == -1d, "Found no solution but one should exist.");
             }
             else
             {
@@ -61,12 +61,12 @@ namespace fast.search.tests
                     i++;
                     (state, stepCost) = problem.ApplyAction(state, move);
                     totalCost += stepCost;
-                    output.WriteLine(state.ToString());
+                    //output.WriteLine(state.ToString());
                 }
                 output.WriteLine("Final State ({0} moves, {1} cost) ----------------", i, totalCost);
                 output.WriteLine(state.ToString());
                 Assert.True(problem.IsGoal(state), "Non-goal state claimed to be goal.");
-                Assert.True(optimalCost == totalCost, "Found a non optimal cost: expected = " + optimalCost + "; actual = " + totalCost);
+                Assert.True(Math.Abs(optimalCost - totalCost) < 1e-8, "Found a non optimal cost: expected = " + optimalCost + "; actual = " + totalCost);
             }
         }
     }
