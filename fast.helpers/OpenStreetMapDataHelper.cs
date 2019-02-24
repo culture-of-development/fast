@@ -31,18 +31,32 @@ namespace fast.helpers
         )
         {
             var (graph, nodes) = ExtractMapGraph(osm_pbf_filename);
-            var nodeLocator = MakeNodeLocator(nodes);
+            var nodeLocator = new KdTreeNearestNeighbors(nodes);
             return BuildMapProblem(graph, nodeLocator, latFrom, lonFrom, latTo, lonTo);
         }
-
-        public static KdTree<double, FindingDirectionsState> MakeNodeLocator(HashSet<FindingDirectionsState> nodes)
+        public static INearestNeighbor<FindingDirectionsState> MakeNodeLocator(HashSet<FindingDirectionsState> nodes)
         {
-            var tree = new KdTree<double, FindingDirectionsState>(2, new DoubleGeoMath());
-            foreach(var node in nodes)
+            return new KdTreeNearestNeighbors(nodes);
+        }
+        private class KdTreeNearestNeighbors : INearestNeighbor<FindingDirectionsState>
+        {
+            private KdTree<double, FindingDirectionsState> tree;
+
+            public KdTreeNearestNeighbors(HashSet<FindingDirectionsState> nodes)
             {
-                tree.Add(new[] { node.Latitude, node.Longitude }, node);
+                tree = new KdTree<double, FindingDirectionsState>(2, new DoubleGeoMath());
+                foreach(var node in nodes)
+                {
+                    tree.Add(new[] { node.Latitude, node.Longitude }, node);
+                }
             }
-            return tree;
+            public FindingDirectionsState FindNearestNeighbor(FindingDirectionsState source)
+            {
+                double lat = source.Latitude;
+                double lon = source.Longitude;
+                var to = tree.GetNearestNeighbours(new[] { lat, lon }, 1)[0].Value;
+                throw new NotImplementedException();
+            }
         }
         [Serializable]
         public class DoubleGeoMath : DoubleMath
@@ -57,13 +71,13 @@ namespace fast.helpers
         public static FindingDirectionsProblem BuildMapProblem(
             IWeightedGraph<FindingDirectionsState, double> graph, 
             // TODO: swap this out for something that isn't a dependency
-            KdTree<double, FindingDirectionsState> nodeLocator,
+            INearestNeighbor<FindingDirectionsState> nodeLocator,
             double latFrom, double lonFrom, 
             double latTo, double lonTo
         )
         {
-            var from = nodeLocator.GetNearestNeighbours(new[] { latFrom, lonFrom }, 1)[0].Value;
-            var to = nodeLocator.GetNearestNeighbours(new[] { latTo, lonTo }, 1)[0].Value;
+            var from = nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, latFrom, lonFrom));
+            var to = nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, latTo, lonTo));
             var problem = new FindingDirectionsProblem(graph, from, to);
             return problem;
         }

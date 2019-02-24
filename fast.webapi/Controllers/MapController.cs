@@ -17,7 +17,7 @@ namespace fast.webapi.Controllers
     public class MapController : ControllerBase
     {
         private static IWeightedGraph<FindingDirectionsState, double> mapGraph;
-        private static KdTree<double, FindingDirectionsState> locations;
+        private static INearestNeighbor<FindingDirectionsState> locations;
 
         public static void InitializeMapData(string city_name)
         {
@@ -27,7 +27,7 @@ namespace fast.webapi.Controllers
             MapController.mapGraph = graph;
             MapController.locations = OpenStreetMapDataHelper.MakeNodeLocator(nodes);
             Console.WriteLine("Map data loaded");
-            Console.WriteLine("    Total map nodes: " + locations.Count);
+            Console.WriteLine("    Total map nodes: " + nodes.Count);
         }
 
         // GET api/map/{string}

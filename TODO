@@ -1,6 +1,5 @@
 TODO: stream
 ----------------
-abstract away the KdTree so we only need it in one place instead of webapi and helpers
 extract graph model from OSM so we don't have to do it every time
 set a threshold on nearest point as well
 remove IProblem.GetGoalState, the algorithm doesnt need it, it's a helper for building problems only
@@ -15,8 +14,14 @@ remeber:
 
 DONE:
 ----------------
+offstream:
+abstract away the KdTree so we only need it in one place instead of webapi and helpers
+
+
+
 2019-02-22
 improve perf on locating nearest point
+implement landmark heuristic
 
 
 2019-02-20

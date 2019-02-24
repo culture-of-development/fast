@@ -120,10 +120,10 @@ namespace fast.search.tests
             var goal = problem.GetGoalState();
             // TODO: find a good way to choose landmarks
             var landmarks = new List<FindingDirectionsState>();
-            landmarks.Add(nodeLocator.GetNearestNeighbours(new[] { -11.9997645637738,-77.08525616778775 }, 1)[0].Value);
-            landmarks.Add(nodeLocator.GetNearestNeighbours(new[] { -12.073047431238026,-77.16825444354458 }, 1)[0].Value);
-            //landmarks.Add(nodeLocator.GetNearestNeighbours(new[] { -12.190050763534796,-76.97454096014161 }, 1)[0].Value);
-            //landmarks[3] = nodeLocator.GetNearestNeighbours(new[] { -12.0160677109035,-76.87767227591303 }, 1)[0].Value;
+            landmarks.Add(nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, -11.9997645637738, -77.08525616778775)));
+            landmarks.Add(nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, -12.0730474312380, -77.16825444354458)));
+            landmarks.Add(nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, -12.1900507635347, -76.97454096014161)));
+            landmarks.Add(nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, -12.0160677109035, -76.87767227591303)));
             output.WriteLine("Landmarks selected: " + landmarks.Count);
             foreach(var landmark in landmarks)
             {
