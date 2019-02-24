@@ -15,6 +15,7 @@ namespace fast.search
         // if you want undirected, then initialize with edges in both directions
         IEnumerable<TNode> GetNeighbors(TNode node);
         TWeight GetEdgeWeight(TNode from, TNode to);
+        IEnumerable<(TNode from, TNode to, TWeight weight)> EnumerateEdges();
     }
 
     public interface IWeightedGraphEdge<TNode, TWeight>
@@ -29,30 +30,36 @@ namespace fast.search
         where TNode : IGraphNode
     {
         // should these be read only dictionaries?
-        private Dictionary<ulong, Dictionary<ulong, (TNode node, TWeight weight)>> edges;
+        private Dictionary<TNode, Dictionary<TNode, TWeight>> edges;
 
         public AdjacencyListWeightedGraph(IEnumerable<IWeightedGraphEdge<TNode, TWeight>> edges)
         {
             this.edges = edges
                 .GroupBy(m => m.From)
                 .ToDictionary(
-                    m => m.Key.NodeId,
+                    m => m.Key,
                     // TODO: remove this logic, deduping edges should throw, revert this
-                    m => m.GroupBy(j => j.To.NodeId)
-                        .ToDictionary(j => j.Key, j => { var a = j.OrderBy(t => t.Weight).First(); return (a.To, a.Weight); })
+                    m => m
+                        .GroupBy(j => j.To)
+                        .ToDictionary(j => j.Key, j => j.Min(t => t.Weight))
                 );
         }
         
         public TWeight GetEdgeWeight(TNode from, TNode to)
         {
-            return edges[from.NodeId][to.NodeId].weight;
+            return edges[from][to];
         }
 
         public IEnumerable<TNode> GetNeighbors(TNode node)
         {
             // TODO: this should throw if the node is not in the graph at all
-            if (!edges.ContainsKey(node.NodeId)) return new TNode[0];
-            return edges[node.NodeId].Values.Select(m => m.node);
+            if (!edges.ContainsKey(node)) return new TNode[0];
+            return edges[node].Keys;
+        }
+
+        public IEnumerable<(TNode from, TNode to, TWeight weight)> EnumerateEdges()
+        {
+            return edges.SelectMany(from => from.Value.Select(to => (from.Key, to.Key, to.Value)));
         }
     }
 }
