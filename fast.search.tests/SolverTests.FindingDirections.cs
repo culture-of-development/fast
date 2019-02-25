@@ -30,7 +30,14 @@ namespace fast.search.tests
         [Fact]
         public void TestFindingDirectionsAStarSearchRomaniaStraightLineDistanceHeuristic()
         {
-            //var heuristic = StraightLineToBucharestHeuristic();
+            var heuristic = StraightLineToBucharestHeuristic();
+            var solver = new AStarSearchSolver<FindingDirectionsState>(heuristic);
+            var problem = GetRomaniaProblem();
+            TestSolver(solver, problem, 418);
+        }
+        [Fact]
+        public void TestFindingDirectionsAStarSearchRomaniaLandmarksHeuristic()
+        {
             var heuristic = MakeRomaniaLandmarksHeuristic();
             var solver = new AStarSearchSolver<FindingDirectionsState>(heuristic);
             var problem = GetRomaniaProblem();
@@ -41,8 +48,8 @@ namespace fast.search.tests
             var (graph, nodes) = GetRomaniaGraph();
             var names = nodes.ToDictionary(m => m.Value.NodeId, m => m.Value.LocationName);
             var bucharest = nodes["Bucharest"];
-            var clookup = HeuristicsHelper.BuildShortestPathLookup(graph, nodes["Craiova"]);
-            var olookup = HeuristicsHelper.BuildShortestPathLookup(graph, nodes["Oradea"]);
+            // var clookup = HeuristicsHelper.BuildShortestPathLookup(graph, nodes["Craiova"]);
+            // var olookup = HeuristicsHelper.BuildShortestPathLookup(graph, nodes["Oradea"]);
             //var dists = lookup.OrderBy(m => names[m.Key]);
             // foreach(var dist in dists)
             // {
@@ -122,7 +129,7 @@ namespace fast.search.tests
             var landmarks = new List<FindingDirectionsState>();
             landmarks.Add(nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, -11.9997645637738, -77.08525616778775)));
             landmarks.Add(nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, -12.0730474312380, -77.16825444354458)));
-            landmarks.Add(nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, -12.1900507635347, -76.97454096014161)));
+            //landmarks.Add(nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, -12.1900507635347, -76.97454096014161)));
             landmarks.Add(nodeLocator.FindNearestNeighbor(new FindingDirectionsState(0, null, -12.0160677109035, -76.87767227591303)));
             output.WriteLine("Landmarks selected: " + landmarks.Count);
             foreach(var landmark in landmarks)
@@ -166,8 +173,6 @@ namespace fast.search.tests
             var (graph, nodes) = GetRomaniaGraph();
             var names = nodes.ToDictionary(m => m.Value.NodeId, m => m.Value.LocationName);
             var bucharest = nodes["Bucharest"];
-            var clookup = HeuristicsHelper.BuildShortestPathLookup(graph, nodes["Craiova"]);
-            var olookup = HeuristicsHelper.BuildShortestPathLookup(graph, nodes["Oradea"]);
             //var dists = lookup.OrderBy(m => names[m.Key]);
             // foreach(var dist in dists)
             // {
@@ -176,8 +181,6 @@ namespace fast.search.tests
 
             var l = new[] { nodes["Oradea"], nodes["Craiova"] };
             var h = HeuristicsHelper.MakeLandmarksHeuristic(bucharest, graph, l);
-            Assert.Equal(239, clookup[bucharest.NodeId]);
-            Assert.Equal(429, olookup[bucharest.NodeId]);
             Assert.Equal(358, h(nodes["Zerind"]));
             Assert.Equal(278, h(nodes["Sibiu"]));
             Assert.Equal(165, h(nodes["Timisoara"]));

@@ -54,8 +54,8 @@ namespace fast.helpers
             {
                 double lat = source.Latitude;
                 double lon = source.Longitude;
-                var to = tree.GetNearestNeighbours(new[] { lat, lon }, 1)[0].Value;
-                throw new NotImplementedException();
+                var nearest = tree.GetNearestNeighbours(new[] { lat, lon }, 1)[0].Value;
+                return nearest;
             }
         }
         [Serializable]

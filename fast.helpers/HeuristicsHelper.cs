@@ -20,36 +20,41 @@ namespace fast.helpers
             IEnumerable<FindingDirectionsState> landmarks
         )
         {
+            // https://pdfs.semanticscholar.org/8d94/9fb5f753296db787b2b2e10b86b4224545d5.pdf
+            var reverseGraph = GraphHelper.MakeReverseGraph(mapGraph);
             var landmarkLookups = landmarks
-                .Select(l => BuildShortestPathLookup(mapGraph, l))
+                .Select(l => BuildShortestPathLookup(mapGraph, reverseGraph, l))
                 .ToArray();
             return from => landmarkLookups
-                .Max(lookup => Math.Abs(lookup[from.NodeId] - lookup[goal.NodeId]));
+                .Max(lookups => {
+                    var to_landmark = lookups.to_landmark[from.NodeId] - lookups.to_landmark[goal.NodeId];
+                    var from_landmark = lookups.from_landmark[goal.NodeId] - lookups.from_landmark[from.NodeId];
+                    return Math.Max(0, Math.Max(to_landmark, from_landmark));
+                });
         }
 
-        public static Dictionary<ulong, double> BuildShortestPathLookup(
-            IWeightedGraph<FindingDirectionsState, double> mapGraph,
+        public static (Dictionary<ulong, double> from_landmark, Dictionary<ulong, double> to_landmark) BuildShortestPathLookup(
+            IWeightedGraph<FindingDirectionsState, double> forwardGraph,
+            IWeightedGraph<FindingDirectionsState, double> reverseGraph,
             FindingDirectionsState landmark
         )
         {
-            // TODO: abstract this to Djikstra's algorithm
-            // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
-            // function Dijkstra(Graph, source):
-            //     create vertex set Q
-            //     for each vertex v in Graph:             
-            //         dist[v] ← INFINITY                  
-            //         prev[v] ← UNDEFINED                 
-            //         add v to Q                      
-            //     dist[source] ← 0                        
-            //     while Q is not empty:
-            //         u ← vertex in Q with min dist[u]    
-            //         remove u from Q 
-            //         for each neighbor v of u:           
-            //             alt ← dist[u] + length(u, v)
-            //             if alt < dist[v]:               
-            //                 dist[v] ← alt 
-            //                 prev[v] ← u 
-            //     return dist[], prev[]
+            var from_landmark = BellmanFordDistances(forwardGraph, landmark);
+            var to_landmark = BellmanFordDistances(reverseGraph, landmark);
+            return (from_landmark, to_landmark);
+        }
+
+        public static Dictionary<ulong, double> BellmanFordDistances(
+            IWeightedGraph<FindingDirectionsState, double> graph,
+            FindingDirectionsState landmark
+        )
+        {
+            // TODO: move this to fast.search
+            // https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm
+            // this is a version of Bellman-Ford that assumes no prior knowledge
+            // of the full node set and only tracks reachable nodes, anything not
+            // in the result of this function should be considered infinite
+            // we also only care about the distances here and do not maintain prev
             var result = new Dictionary<ulong, double>();
             var openSet = new OpenSet<double, FindingDirectionsState>();
             openSet.PushOrImprove(0d, landmark);
@@ -59,10 +64,10 @@ namespace fast.helpers
                 var node = openSet.PopMin();
                 if (result.ContainsKey(node.NodeId)) continue;
                 result.Add(node.NodeId, dist);
-                var neighbors = mapGraph.GetNeighbors(node);
+                var neighbors = graph.GetNeighbors(node);
                 foreach(var neighbor in neighbors)
                 {
-                    openSet.PushOrImprove(dist + mapGraph.GetEdgeWeight(node, neighbor), neighbor);
+                    openSet.PushOrImprove(dist + graph.GetEdgeWeight(node, neighbor), neighbor);
                 }
             }
             return result;
