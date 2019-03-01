@@ -1,3 +1,6 @@
+# git crap
+*.orig
+
 # build artifacts
 bin/
 obj/
