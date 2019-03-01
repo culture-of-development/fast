@@ -17,6 +17,7 @@ namespace fast.webapi.Controllers
     public class MapController : ControllerBase
     {
         private static IWeightedGraph<FindingDirectionsState, double> mapGraph;
+        private static IWeightedGraph<FindingDirectionsState, IEnumerable<FindingDirectionsState>> segmentsGraph;
         private static INearestNeighbor<FindingDirectionsState> locations;
         private static FindingDirectionsState[] landmarks;
         private static Func<FindingDirectionsState, FindingDirectionsState, double> double_heuristic;
@@ -28,8 +29,10 @@ namespace fast.webapi.Controllers
         {
             Log.WriteLine("Loading map data: " + city_name);
             var filename = Path.Combine($@"../datasets/{city_name}/{city_name}.osm.pbf");
-            var (graph, nodes) = OpenStreetMapDataHelper.ExtractMapGraph(filename);
+            //var (graph, nodes) = OpenStreetMapDataHelper.ExtractMapGraph(filename);
+            var (graph, segments, nodes) = OpenStreetMapDataHelper.ExtractIntersectionMapGraph(filename);
             MapController.mapGraph = graph;
+            MapController.segmentsGraph = segments;
             MapController.locations = OpenStreetMapDataHelper.MakeNodeLocator(nodes);
             Log.WriteLine("Calculating heuristic");
             //MapController.double_heuristic = (from, goal) => DistanceHelper.Haversine(from.Latitude, from.Longitude, goal.Latitude, goal.Longitude);
@@ -82,10 +85,23 @@ namespace fast.webapi.Controllers
             var solver = new AStarSearchSolver<FindingDirectionsState>(heuristic);
             var locationFinding = timer.Elapsed.TotalMilliseconds;
             timer = Stopwatch.StartNew();
-            var steps = solver.Solve(problem)
-                .Cast<FindingDirectionsState>()
-                .Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude })
-                .ToArray();
+            var solution = solver.Solve(problem).Cast<FindingDirectionsState>().ToArray();
+            List<LatLng> steps = null;
+            if (MapController.segmentsGraph == null)
+            {
+                steps = new List<LatLng>();
+                for(int i = 1; i < solution.Length; i++)
+                {
+                    var parts = MapController.segmentsGraph.GetEdgeWeight(solution[i-1], solution[i]);
+                    steps.AddRange(parts.Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude }));
+                }
+            }
+            else
+            {
+                steps = solution
+                    .Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude })
+                    .ToList();
+            }
             var itemsTime = timer.Elapsed.TotalMilliseconds;
             return new { 
                 points = steps, 

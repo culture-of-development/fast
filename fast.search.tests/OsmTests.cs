@@ -13,6 +13,7 @@ namespace fast.search.tests
         public OsmTests(ITestOutputHelper output) : base(output) { }
 
         public const string LimaFilename = @"../../../../datasets/Lima/Lima.osm.pbf";
+        public const string NewYorkFilename = @"../../../../datasets/NewYork/NewYork.osm.pbf";
 
         [Fact]
         public void TestReadLimaPeru()
@@ -34,6 +35,37 @@ namespace fast.search.tests
                     LimaFilename, -12.073457334109781, -77.16832519640246,
                     -12.045889755060621,-77.04266126523356
                 );
+        }
+
+        [Fact]
+        public void TestBuildGraphNewYork()
+        {
+            var lima = OpenStreetMapDataHelper.ExtractMapProblem(
+                    NewYorkFilename, -12.073457334109781, -77.16832519640246,
+                    -12.045889755060621,-77.04266126523356
+                );
+        }
+
+        [Fact]
+        public void OsmEdgeDedupesCorrectly()
+        {
+            var from_a = new FindingDirectionsState(139489);
+            var to_a = new FindingDirectionsState(198573);
+            var from_b = new FindingDirectionsState(139489);
+            var to_b = new FindingDirectionsState(198573);
+            var from_c = new FindingDirectionsState(139489);
+            var to_c = new FindingDirectionsState(298573);
+            IWeightedGraphEdge<FindingDirectionsState, double> a = new OpenStreetMapDataHelper.OsmEdge(from_a, to_a, 0d);
+            IWeightedGraphEdge<FindingDirectionsState, double> b = new OpenStreetMapDataHelper.OsmEdge(from_a, to_a, 1d);
+            IWeightedGraphEdge<FindingDirectionsState, double> c = new OpenStreetMapDataHelper.OsmEdge(from_a, to_c, 3d);
+            var hashSet = new HashSet<IWeightedGraphEdge<FindingDirectionsState, double>>();
+            hashSet.Add(a);
+            var actual = hashSet.Add(b);
+            Assert.False(actual, "It did not dedupe correctly.");
+            actual = hashSet.Add(c);
+            Assert.True(actual, "Should have added that last point.");
+            var graph = new AdjacencyListWeightedGraph<FindingDirectionsState, double>(hashSet);
+            Assert.Equal(2, graph.EnumerateEdges().Count());
         }
     }
 }

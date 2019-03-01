@@ -38,10 +38,7 @@ namespace fast.search
                 .GroupBy(m => m.From)
                 .ToDictionary(
                     m => m.Key,
-                    // TODO: remove this logic, deduping edges should throw, revert this
-                    m => m
-                        .GroupBy(j => j.To)
-                        .ToDictionary(j => j.Key, j => j.Min(t => t.Weight))
+                    m => m.ToDictionary(j => j.To, j => j.Weight)
                 );
         }
         
