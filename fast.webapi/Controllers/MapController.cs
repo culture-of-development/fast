@@ -60,12 +60,6 @@ namespace fast.webapi.Controllers
             return PhysicalFile(filename, "text/html");
         }
 
-        [HttpGet("get-landmarks")]
-        public ActionResult<LatLng[]> GetLandmarks()
-        {
-            return landmarks.Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude }).ToArray();
-        }
-
         [HttpGet("info")]
         public ActionResult<object> GetMapInfo()
         {
@@ -73,12 +67,13 @@ namespace fast.webapi.Controllers
                 nodeCount,
                 bbNorthWest,
                 bbSouthEast,
+                landmarks = landmarks?.Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude }).ToArray(),
             };
         }
 
         // GET api/map/directions
         [HttpGet("directions")]
-        public ActionResult<DirectionsResult> GetDirections(double latFrom, double lonFrom, double latTo, double lonTo)
+        public ActionResult<object> GetDirections(double latFrom, double lonFrom, double latTo, double lonTo)
         {
             var timer = Stopwatch.StartNew();
             var problem = OpenStreetMapDataHelper.BuildMapProblem(mapGraph, locations, latFrom, lonFrom, latTo, lonTo);
@@ -92,19 +87,18 @@ namespace fast.webapi.Controllers
                 .Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude })
                 .ToArray();
             var itemsTime = timer.Elapsed.TotalMilliseconds;
-            return new DirectionsResult { points = steps, problemDefineTime = locationFinding, directionsFindTime = itemsTime };
+            return new { 
+                points = steps, 
+                problemDefineTime = locationFinding, 
+                directionsFindTime = itemsTime,
+                statesEvaluated = solver.StatesEvaluated,
+            };
         }
 
         public class LatLng
         {
             public double lat { get; set; }
             public double lng { get; set; }
-        }
-        public class DirectionsResult
-        {
-            public IEnumerable<LatLng> points { get; set; }
-            public double problemDefineTime { get; set; }
-            public double directionsFindTime { get; set; }
         }
     }
 }

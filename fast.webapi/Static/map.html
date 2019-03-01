@@ -34,7 +34,6 @@
                     getDirections(pointFrom, pointTo);
                 }
             });
-            getLandmarks();
             loadMapInfo();
         }
         google.maps.event.addDomListener(window, 'load', initialize);
@@ -47,6 +46,13 @@
             console.log(data);
             if (data.bbNorthWest) {
                 focusBoundingBox([data.bbNorthWest, data.bbSouthEast]);
+            }
+            if (data.landmarks) {
+                for(let i in data.landmarks) {
+                    const l = data.landmarks[i];
+                    const marker = new google.maps.Marker({position: l});
+                    marker.setMap(map);
+                }
             }
         }
         function focusBoundingBox(points) {
@@ -111,25 +117,17 @@
                 .then(jsonOrFail)
                 .then(data => {
                     console.log("locations: " + data.problemDefineTime + ", solve: " + data.directionsFindTime);
+                    for(var key in data) {
+                        if (data.hasOwnProperty(key) && key != "points") {
+                            console.log(key, data[key]);
+                        }
+                    }
                     showResultsSegment(data.points);
                 });
         }
         function jsonOrFail(response) {
             if (response.ok) return response.json();
             console.log(response);
-        }
-        function getLandmarks() {
-            fetch("/api/map/get-landmarks")
-                .then(jsonOrFail)
-                .then(data => {
-                    console.log("landmarks:");
-                    console.log(data);
-                    for(let i in data) {
-                        const l = data[i];
-                        const marker = new google.maps.Marker({position: l});
-                        marker.setMap(map);
-                    }
-                });
         }
     </script>
   </head>
