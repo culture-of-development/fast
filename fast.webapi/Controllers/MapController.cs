@@ -20,25 +20,39 @@ namespace fast.webapi.Controllers
         private static INearestNeighbor<FindingDirectionsState> locations;
         private static FindingDirectionsState[] landmarks;
         private static Func<FindingDirectionsState, FindingDirectionsState, double> double_heuristic;
+        private static long nodeCount;
+        private static LatLng bbNorthWest;
+        private static LatLng bbSouthEast;
 
         public static void InitializeMapData(string city_name)
         {
-            Console.WriteLine("Loading map data: " + city_name);
+            Log.WriteLine("Loading map data: " + city_name);
             var filename = Path.Combine($@"../datasets/{city_name}/{city_name}.osm.pbf");
             var (graph, nodes) = OpenStreetMapDataHelper.ExtractMapGraph(filename);
             MapController.mapGraph = graph;
             MapController.locations = OpenStreetMapDataHelper.MakeNodeLocator(nodes);
-            Console.WriteLine("Calculating heuristic");
+            Log.WriteLine("Calculating heuristic");
             //MapController.double_heuristic = (from, goal) => DistanceHelper.Haversine(from.Latitude, from.Longitude, goal.Latitude, goal.Longitude);
             var random = new Random();
             // TODO: find a better way to choose landmarks
             MapController.landmarks = nodes.OrderBy(m => random.Next()).Take(4).ToArray();
             MapController.double_heuristic = HeuristicsHelper.MakeLandmarksHeuristicDouble(mapGraph, MapController.landmarks);
-            Console.WriteLine("Map data loaded");
-            Console.WriteLine("    Total map nodes: " + nodes.Count);
+            MapController.nodeCount = nodes.Count;
+            Log.WriteLine("Calculating bounding box");
+            foreach(var node in nodes)
+            {
+                if (bbNorthWest == null) bbNorthWest = new LatLng { lat = node.Latitude, lng = node.Longitude };
+                bbNorthWest.lat = Math.Min(bbNorthWest.lat, node.Latitude);
+                bbNorthWest.lng = Math.Min(bbNorthWest.lng, node.Longitude);
+                if (bbSouthEast == null) bbSouthEast = new LatLng { lat = node.Latitude, lng = node.Longitude };
+                bbSouthEast.lat = Math.Max(bbSouthEast.lat, node.Latitude);
+                bbSouthEast.lng = Math.Max(bbSouthEast.lng, node.Longitude);
+            }
+            Log.WriteLine("Map data loaded: " + city_name);
+            Log.WriteLine("    Total map nodes: " + nodes.Count);
         }
 
-        // GET api/map/{string}
+        // GET api/map
         [HttpGet()]
         public IActionResult Show()
         {
@@ -52,6 +66,17 @@ namespace fast.webapi.Controllers
             return landmarks.Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude }).ToArray();
         }
 
+        [HttpGet("info")]
+        public ActionResult<object> GetMapInfo()
+        {
+            return new {
+                nodeCount,
+                bbNorthWest,
+                bbSouthEast,
+            };
+        }
+
+        // GET api/map/directions
         [HttpGet("directions")]
         public ActionResult<DirectionsResult> GetDirections(double latFrom, double lonFrom, double latTo, double lonTo)
         {

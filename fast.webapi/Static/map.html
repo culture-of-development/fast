@@ -35,8 +35,40 @@
                 }
             });
             getLandmarks();
+            loadMapInfo();
         }
         google.maps.event.addDomListener(window, 'load', initialize);
+        function loadMapInfo() {
+            fetch("/api/map/info")
+            .then(jsonOrFail)
+            .then(drawMapData);
+        }
+        function drawMapData(data) {
+            console.log(data);
+            if (data.bbNorthWest) {
+                focusBoundingBox([data.bbNorthWest, data.bbSouthEast]);
+            }
+        }
+        function focusBoundingBox(points) {
+            // https://stackoverflow.com/a/3251262/178082
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < points.length; i++) {
+                bounds.extend(points[i]);
+            }
+            map.fitBounds(bounds);
+            var ne = bounds.getNorthEast();
+            var sw = bounds.getSouthWest();
+            var boundingBox = new google.maps.Polyline({
+                path: [
+                    ne, new google.maps.LatLng(ne.lat(), sw.lng()),
+                    sw, new google.maps.LatLng(sw.lat(), ne.lng()), ne
+                ],
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+            boundingBox.setMap(map);
+        }
         function addMarker(lat, lon) {
             var marker = new google.maps.Marker({
                 position: new google.maps.LatLng(lat,lon)
@@ -76,27 +108,19 @@
             var query = "latFrom=" + pointFrom.lat() + "&lonFrom=" + pointFrom.lng() +
                         "&latTo=" + pointTo.lat() + "&lonTo=" + pointTo.lng();
             fetch("/api/map/directions?" + query)
-                .then(function(response) {
-                    if (response.ok)
-                    {
-                        return response.json();
-                    }
-                    console.log(response);
-                })
+                .then(jsonOrFail)
                 .then(data => {
                     console.log("locations: " + data.problemDefineTime + ", solve: " + data.directionsFindTime);
                     showResultsSegment(data.points);
                 });
         }
+        function jsonOrFail(response) {
+            if (response.ok) return response.json();
+            console.log(response);
+        }
         function getLandmarks() {
             fetch("/api/map/get-landmarks")
-                .then(function(response) {
-                    if (response.ok)
-                    {
-                        return response.json();
-                    }
-                    console.log(response);
-                })
+                .then(jsonOrFail)
                 .then(data => {
                     console.log("landmarks:");
                     console.log(data);

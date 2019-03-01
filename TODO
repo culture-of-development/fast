@@ -14,6 +14,11 @@ remeber:
 
 DONE:
 ----------------
+2019-02-27
+update map to use random landmarks heuristic
+offstream: add map auto zooming Osm bounding box on load
+
+
 offstream:
 abstract away the KdTree so we only need it in one place instead of webapi and helpers
 
