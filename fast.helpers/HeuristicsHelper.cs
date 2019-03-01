@@ -27,9 +27,42 @@ namespace fast.helpers
                 .ToArray();
             return from => landmarkLookups
                 .Max(lookups => {
-                    var to_landmark = lookups.to_landmark[from.NodeId] - lookups.to_landmark[goal.NodeId];
-                    var from_landmark = lookups.from_landmark[goal.NodeId] - lookups.from_landmark[from.NodeId];
-                    return Math.Max(0, Math.Max(to_landmark, from_landmark));
+                    double max = 0d;
+                    if (lookups.to_landmark.ContainsKey(from.NodeId) && lookups.to_landmark.ContainsKey(goal.NodeId))
+                    {
+                        max = Math.Max(max, lookups.to_landmark[from.NodeId] - lookups.to_landmark[goal.NodeId]);
+                    }
+                    if (lookups.from_landmark.ContainsKey(from.NodeId) && lookups.from_landmark.ContainsKey(goal.NodeId))
+                    {
+                        max = Math.Max(max, lookups.from_landmark[goal.NodeId] - lookups.from_landmark[from.NodeId]);
+                    }
+                    return max;
+                });
+        }
+
+        // TODO: clean up this copy/paste job
+        public static Func<FindingDirectionsState, FindingDirectionsState, double> MakeLandmarksHeuristicDouble(
+            IWeightedGraph<FindingDirectionsState, double> mapGraph,
+            IEnumerable<FindingDirectionsState> landmarks
+        )
+        {
+            // https://pdfs.semanticscholar.org/8d94/9fb5f753296db787b2b2e10b86b4224545d5.pdf
+            var reverseGraph = GraphHelper.MakeReverseGraph(mapGraph);
+            var landmarkLookups = landmarks
+                .Select(l => BuildShortestPathLookup(mapGraph, reverseGraph, l))
+                .ToArray();
+            return (from, to) => landmarkLookups
+                .Max(lookups => {
+                    double max = 0d;
+                    if (lookups.to_landmark.ContainsKey(from.NodeId) && lookups.to_landmark.ContainsKey(to.NodeId))
+                    {
+                        max = Math.Max(max, lookups.to_landmark[from.NodeId] - lookups.to_landmark[to.NodeId]);
+                    }
+                    if (lookups.from_landmark.ContainsKey(from.NodeId) && lookups.from_landmark.ContainsKey(to.NodeId))
+                    {
+                        max = Math.Max(max, lookups.from_landmark[to.NodeId] - lookups.from_landmark[from.NodeId]);
+                    }
+                    return max;
                 });
         }
 

@@ -18,8 +18,10 @@
         function initialize() {
             var mapOptions = {
                 zoom: 12,
+                // TODO: pull this so we dont have to check it each time
                 //center: new google.maps.LatLng(-12.052618892946983,-77.0599418376168) // Lima, Peru
-                center: new google.maps.LatLng(55.8558197,-4.2978574) // Glasgow, UK
+                //center: new google.maps.LatLng(55.8558197,-4.2978574) // Glasgow, UK
+                center: new google.maps.LatLng(40.7592678,-74.0251393) // New York, USA
             };
             map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
             // https://stackoverflow.com/a/8026984/178082
@@ -32,6 +34,7 @@
                     getDirections(pointFrom, pointTo);
                 }
             });
+            getLandmarks();
         }
         google.maps.event.addDomListener(window, 'load', initialize);
         function addMarker(lat, lon) {
@@ -73,17 +76,36 @@
             var query = "latFrom=" + pointFrom.lat() + "&lonFrom=" + pointFrom.lng() +
                         "&latTo=" + pointTo.lat() + "&lonTo=" + pointTo.lng();
             fetch("/api/map/directions?" + query)
-            .then(function(response) {
-                if (response.ok)
-                {
-                    return response.json();
-                }
-                console.log(response);
-            })
-            .then(data => {
-                console.log("locations: " + data.problemDefineTime + ", solve: " + data.directionsFindTime);
-                showResultsSegment(data.points);
-            });
+                .then(function(response) {
+                    if (response.ok)
+                    {
+                        return response.json();
+                    }
+                    console.log(response);
+                })
+                .then(data => {
+                    console.log("locations: " + data.problemDefineTime + ", solve: " + data.directionsFindTime);
+                    showResultsSegment(data.points);
+                });
+        }
+        function getLandmarks() {
+            fetch("/api/map/get-landmarks")
+                .then(function(response) {
+                    if (response.ok)
+                    {
+                        return response.json();
+                    }
+                    console.log(response);
+                })
+                .then(data => {
+                    console.log("landmarks:");
+                    console.log(data);
+                    for(let i in data) {
+                        const l = data[i];
+                        const marker = new google.maps.Marker({position: l});
+                        marker.setMap(map);
+                    }
+                });
         }
     </script>
   </head>

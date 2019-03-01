@@ -18,14 +18,22 @@ namespace fast.webapi.Controllers
     {
         private static IWeightedGraph<FindingDirectionsState, double> mapGraph;
         private static INearestNeighbor<FindingDirectionsState> locations;
+        private static FindingDirectionsState[] landmarks;
+        private static Func<FindingDirectionsState, FindingDirectionsState, double> double_heuristic;
 
         public static void InitializeMapData(string city_name)
         {
-            Console.WriteLine("Loading map data");
+            Console.WriteLine("Loading map data: " + city_name);
             var filename = Path.Combine($@"../datasets/{city_name}/{city_name}.osm.pbf");
             var (graph, nodes) = OpenStreetMapDataHelper.ExtractMapGraph(filename);
             MapController.mapGraph = graph;
             MapController.locations = OpenStreetMapDataHelper.MakeNodeLocator(nodes);
+            Console.WriteLine("Calculating heuristic");
+            //MapController.double_heuristic = (from, goal) => DistanceHelper.Haversine(from.Latitude, from.Longitude, goal.Latitude, goal.Longitude);
+            var random = new Random();
+            // TODO: find a better way to choose landmarks
+            MapController.landmarks = nodes.OrderBy(m => random.Next()).Take(4).ToArray();
+            MapController.double_heuristic = HeuristicsHelper.MakeLandmarksHeuristicDouble(mapGraph, MapController.landmarks);
             Console.WriteLine("Map data loaded");
             Console.WriteLine("    Total map nodes: " + nodes.Count);
         }
@@ -38,14 +46,19 @@ namespace fast.webapi.Controllers
             return PhysicalFile(filename, "text/html");
         }
 
+        [HttpGet("get-landmarks")]
+        public ActionResult<LatLng[]> GetLandmarks()
+        {
+            return landmarks.Select(m => new LatLng { lat = m.Latitude, lng = m.Longitude }).ToArray();
+        }
+
         [HttpGet("directions")]
         public ActionResult<DirectionsResult> GetDirections(double latFrom, double lonFrom, double latTo, double lonTo)
         {
             var timer = Stopwatch.StartNew();
             var problem = OpenStreetMapDataHelper.BuildMapProblem(mapGraph, locations, latFrom, lonFrom, latTo, lonTo);
             var goal = problem.GetGoalState();
-            Func<FindingDirectionsState, double> heuristic = from => 
-                DistanceHelper.Haversine(from.Latitude, from.Longitude, goal.Latitude, goal.Longitude);
+            Func<FindingDirectionsState, double> heuristic = from => double_heuristic(from, goal);
             var solver = new AStarSearchSolver<FindingDirectionsState>(heuristic);
             var locationFinding = timer.Elapsed.TotalMilliseconds;
             timer = Stopwatch.StartNew();
