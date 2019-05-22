@@ -1,5 +1,8 @@
 TODO: stream
 ----------------
+decision tree:
+    get the boosting parameters from the model
+
 extract graph model from OSM so we don't have to do it every time
 set a threshold on nearest point as well
 remove IProblem.GetGoalState, the algorithm doesnt need it, it's a helper for building problems only
@@ -14,6 +17,10 @@ remeber:
 
 DONE:
 ----------------
+2019-05-22
+Add decision tree parsing and evaluation
+
+
 2019-02-27
 update map to use random landmarks heuristic
 offstream: add map auto zooming Osm bounding box on load
