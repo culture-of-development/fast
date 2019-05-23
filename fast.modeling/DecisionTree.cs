@@ -6,7 +6,7 @@ namespace fast.modeling
 {
     public class DecisionTree
     {
-        private class DecisionTreeNode
+        private struct DecisionTreeNode
         {
             public int FeatureIndex { get; set; }
             public double Value { get; set; }
@@ -45,6 +45,7 @@ namespace fast.modeling
         {
             var lines = definition.Split('\n');
             var nodes = lines
+                .Where(m => !string.IsNullOrWhiteSpace(m))
                 .Select(ParseLine)
                 .OrderBy(m => m.index)
                 .Select(m => m.node)

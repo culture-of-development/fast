@@ -1,4 +1,8 @@
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 using fast.modeling;
@@ -32,6 +36,53 @@ namespace fast.modeling.tests
             var dt = DecisionTree.Create(exampleDecisionTree);
             var value = dt.Evaluate(testValues);
             Assert.Equal(0.077062957, value);
+        }
+
+
+        [Fact]
+        public void TestXGBoostCreate()
+        {
+            var filename = @"../../../../datasets/xgboost/model_xbg_trees.txt";
+            var treesString = File.ReadAllText(filename);
+            var model = XGBoost.Create(treesString);
+            // TODO: ensure correctness of each tree
+        }
+
+        [Fact]
+        public void TestXGBoostEvaluate()
+        {
+            var filename = @"../../../../datasets/xgboost/model_xbg_trees.txt";
+            var treesString = File.ReadAllText(filename);
+            var model = XGBoost.Create(treesString);
+
+            var filename2 = @"../../../../datasets/xgboost/xgboost_test_cases_no_feature_names.txt";
+            var samplesString = File.ReadLines(filename2);
+            var samples = new Dictionary<string, double[]>();
+            foreach(var line in samplesString.Skip(1))
+            {
+                var parts = line.Split(',');
+                var sample = parts[0];
+                var featureIndex = int.Parse(parts[1]);
+                var value = double.Parse(parts[2]);
+                if (!samples.ContainsKey(sample))
+                {
+                    samples.Add(sample, new double[1000]);
+                }
+                samples[sample][featureIndex] = value;
+            }
+
+            var timer = Stopwatch.StartNew();
+            const int probablity_feature_index = 840;
+            int i = 0;
+            for(; i < 2; i++)
+            foreach(var sample in samples)
+            {
+                var actual = model.EvaluateProbability(sample.Value);
+                var expected = sample.Value[probablity_feature_index];
+                Assert.InRange(actual, expected - 1e-06, expected + 1e06);
+            }
+            timer.Stop();
+            output.WriteLine($"Time taken for {i*samples.Count} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
         }
 
 
@@ -77,6 +128,7 @@ namespace fast.modeling.tests
 30:leaf=0.0114876805,cover=9618
 16:[f722<0.5] yes=31,no=32,missing=31,gain=601.422363,cover=19596.5
 31:leaf=0.0258833747,cover=18429.75
-32:leaf=0.099892959,cover=1166.75";
+32:leaf=0.099892959,cover=1166.75
+";
     }
 }
