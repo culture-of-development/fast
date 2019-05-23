@@ -1,7 +1,10 @@
 TODO: stream
 ----------------
 decision tree:
-    get the boosting parameters from the model
+    do the perf tuning
+        do the work to verify the perf black hole
+        do the work to fix the perf black hole
+    consider Ricky Bobby "i wanna go fast" emote -TheHugoDahl
 
 extract graph model from OSM so we don't have to do it every time
 set a threshold on nearest point as well
@@ -17,6 +20,10 @@ remeber:
 
 DONE:
 ----------------
+2019-05-23
+get the boosting parameters from the model
+do the xgboost
+
 2019-05-22
 Add decision tree parsing and evaluation
 

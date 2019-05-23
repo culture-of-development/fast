@@ -6,7 +6,7 @@ namespace fast.modeling
 {
     public class DecisionTree
     {
-        private struct DecisionTreeNode
+        public struct DecisionTreeNode
         {
             public int FeatureIndex { get; set; }
             public double Value { get; set; }
@@ -15,10 +15,13 @@ namespace fast.modeling
         }
 
         private DecisionTreeNode[] nodes;
+        public DecisionTreeNode[] Nodes => nodes;
+        private DecisionTreeNode first;
 
         private DecisionTree(DecisionTreeNode[] tree)
         {
             nodes = tree;
+            first = tree[0];
         }
 
         public override string ToString()
@@ -32,7 +35,7 @@ namespace fast.modeling
 
         public double Evaluate(double[] features)
         {
-            var node = this.nodes[0];
+            var node = this.first;
             while(node.FeatureIndex != LeafIndex)
             {
                 int nodeIndex = features[node.FeatureIndex] < node.Value ? node.TrueBranch : node.FalseBranch;
