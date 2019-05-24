@@ -1,21 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.blas", "fast.blas\fast.blas.csproj", "{F9E2D924-34F3-43FA-887D-86ED5DF3BF17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fast.blas", "fast.blas\fast.blas.csproj", "{F9E2D924-34F3-43FA-887D-86ED5DF3BF17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search", "fast.search\fast.search.csproj", "{70B60CFB-7A7A-4A30-BA5E-125935D214A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fast.search", "fast.search\fast.search.csproj", "{70B60CFB-7A7A-4A30-BA5E-125935D214A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.search.tests", "fast.search.tests\fast.search.tests.csproj", "{4CB31D15-61C4-4346-B616-09B1AE5B95A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fast.search.tests", "fast.search.tests\fast.search.tests.csproj", "{4CB31D15-61C4-4346-B616-09B1AE5B95A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.helpers", "fast.helpers\fast.helpers.csproj", "{090652C3-22A5-481C-B490-A14CCE8FDE9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fast.helpers", "fast.helpers\fast.helpers.csproj", "{090652C3-22A5-481C-B490-A14CCE8FDE9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.webapi", "fast.webapi\fast.webapi.csproj", "{5FC79589-9746-4711-B69C-4FE50C08D294}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fast.webapi", "fast.webapi\fast.webapi.csproj", "{5FC79589-9746-4711-B69C-4FE50C08D294}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.modeling", "fast.modeling\fast.modeling.csproj", "{DA06E270-2AFF-4EAB-95FA-D73ADD02ADCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fast.modeling", "fast.modeling\fast.modeling.csproj", "{DA06E270-2AFF-4EAB-95FA-D73ADD02ADCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.modeling.tests", "fast.modeling.tests\fast.modeling.tests.csproj", "{BBFEA027-13A4-45A2-84F6-6F652C42E76A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fast.modeling.tests", "fast.modeling.tests\fast.modeling.tests.csproj", "{BBFEA027-13A4-45A2-84F6-6F652C42E76A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fast.consoleapp", "fast.consoleapp\fast.consoleapp.csproj", "{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,9 +27,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F9E2D924-34F3-43FA-887D-86ED5DF3BF17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -114,5 +113,23 @@ Global
 		{BBFEA027-13A4-45A2-84F6-6F652C42E76A}.Release|x64.Build.0 = Release|Any CPU
 		{BBFEA027-13A4-45A2-84F6-6F652C42E76A}.Release|x86.ActiveCfg = Release|Any CPU
 		{BBFEA027-13A4-45A2-84F6-6F652C42E76A}.Release|x86.Build.0 = Release|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Debug|x64.Build.0 = Debug|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Debug|x86.Build.0 = Debug|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Release|x64.ActiveCfg = Release|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Release|x64.Build.0 = Release|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Release|x86.ActiveCfg = Release|Any CPU
+		{B27E57DE-7393-4D37-A8F2-6B8587EEC2ED}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E7154976-8C6B-4D2F-A765-271C123A96CD}
 	EndGlobalSection
 EndGlobal

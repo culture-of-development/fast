@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "fast.consoleapp": {
+      "commandName": "Project"
+    }
+  }
+}

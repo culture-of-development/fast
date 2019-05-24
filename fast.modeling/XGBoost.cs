@@ -14,9 +14,13 @@ namespace fast.modeling
             this.trees = trees;
         }
 
-        public double EvaluateProbability(double[] instance)
+        public double EvaluateProbability(float[] instance)
         {
-            var sum = trees.Sum(m => m.Evaluate(instance));
+            var sum = 0f;
+            for (int i = 0; i < trees.Length; i++)
+            {
+                sum += trees[i].Evaluate(instance);
+            }
             var result = Logit(sum);
             return result;
         }

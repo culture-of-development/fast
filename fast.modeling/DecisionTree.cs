@@ -8,10 +8,10 @@ namespace fast.modeling
     {
         public struct DecisionTreeNode
         {
-            public int FeatureIndex { get; set; }
-            public double Value { get; set; }
-            public int TrueBranch { get; set; }
-            public int FalseBranch { get; set; }
+            public float Value;
+            public short FeatureIndex;
+            public byte TrueBranch;
+            public byte FalseBranch;
         }
 
         private DecisionTreeNode[] nodes;
@@ -33,12 +33,13 @@ namespace fast.modeling
             return string.Join("\n", lines);
         }
 
-        public double Evaluate(double[] features)
+        public float Evaluate(float[] features)
         {
             var node = this.first;
             while(node.FeatureIndex != LeafIndex)
             {
-                int nodeIndex = features[node.FeatureIndex] < node.Value ? node.TrueBranch : node.FalseBranch;
+                var f = features[node.FeatureIndex];
+                int nodeIndex = f < node.Value ? node.TrueBranch : node.FalseBranch;
                 node = nodes[nodeIndex];
             }
             return node.Value;
@@ -73,7 +74,7 @@ namespace fast.modeling
             return new DecisionTreeNode
             { 
                 FeatureIndex = LeafIndex, 
-                Value = double.Parse(parts.Groups[1].Value)  
+                Value = float.Parse(parts.Groups[1].Value)  
             };
         }
         // decision example: "[f0<0.99992311] yes=1,no=2,missing=1,gain=97812.25,cover=218986"
@@ -83,10 +84,10 @@ namespace fast.modeling
             var parts = decisionParser.Match(nodeInfo);
             return new DecisionTreeNode
             {
-                FeatureIndex = int.Parse(parts.Groups[1].Value),
-                Value = double.Parse(parts.Groups[2].Value),
-                TrueBranch = int.Parse(parts.Groups[3].Value),
-                FalseBranch = int.Parse(parts.Groups[4].Value),
+                FeatureIndex = short.Parse(parts.Groups[1].Value),
+                Value = float.Parse(parts.Groups[2].Value),
+                TrueBranch = byte.Parse(parts.Groups[3].Value),
+                FalseBranch = byte.Parse(parts.Groups[4].Value),
             };
         }
     }

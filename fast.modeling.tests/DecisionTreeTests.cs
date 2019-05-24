@@ -34,8 +34,9 @@ namespace fast.modeling.tests
         public void TestDecisionTreeEvaluate()
         {
             var dt = DecisionTree.Create(exampleDecisionTree);
-            var value = dt.Evaluate(testValues);
-            Assert.Equal(0.077062957, value);
+            var actual = dt.Evaluate(testValues);
+            var expected = 0.077062957;
+            Assert.InRange(actual, expected - 1e-06, expected + 1e06);
         }
 
 
@@ -57,16 +58,16 @@ namespace fast.modeling.tests
 
             var filename2 = @"../../../../datasets/xgboost/xgboost_test_cases_no_feature_names.txt";
             var samplesString = File.ReadLines(filename2);
-            var samples = new Dictionary<string, double[]>();
+            var samples = new Dictionary<string, float[]>();
             foreach(var line in samplesString.Skip(1))
             {
                 var parts = line.Split(',');
                 var sample = parts[0];
                 var featureIndex = int.Parse(parts[1]);
-                var value = double.Parse(parts[2]);
+                var value = float.Parse(parts[2]);
                 if (!samples.ContainsKey(sample))
                 {
-                    samples.Add(sample, new double[1000]);
+                    samples.Add(sample, new float[1000]);
                 }
                 samples[sample][featureIndex] = value;
             }
@@ -85,16 +86,55 @@ namespace fast.modeling.tests
             output.WriteLine($"Time taken for {i*samples.Count} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
         }
 
+        [Fact]
+        public void TestXGBoostEvaluateTiming()
+        {
+            var filename = @"../../../../datasets/xgboost/model_xbg_trees.txt";
+            var treesString = File.ReadAllText(filename);
+            var model = XGBoost.Create(treesString);
+
+            var filename2 = @"../../../../datasets/xgboost/xgboost_test_cases_no_feature_names.txt";
+            var samplesString = File.ReadLines(filename2);
+            var samples = new Dictionary<string, float[]>();
+            foreach(var line in samplesString.Skip(1))
+            {
+                var parts = line.Split(',');
+                var sample = parts[0];
+                var featureIndex = int.Parse(parts[1]);
+                var value = float.Parse(parts[2]);
+                if (!samples.ContainsKey(sample))
+                {
+                    samples.Add(sample, new float[1000]);
+                }
+                samples[sample][featureIndex] = value;
+            }
+
+            Random r = new Random(20190524);
+            var toRun = samples.Select(m => m.Value)
+                .Concat(samples.Select(m => m.Value))
+                .OrderBy(m => r.Next())
+                .ToArray();
+
+            var timer = Stopwatch.StartNew();
+            var results = new double[toRun.Length];
+            for(int i = 0; i < toRun.Length; i++)
+            {
+                results[i] = model.EvaluateProbability(toRun[i]);
+            }
+            timer.Stop();
+            output.WriteLine($"Time taken for {toRun.Length} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
+        }
+
 
         static DecisionTreeTests()
         {
             foreach(var i in new[] { 17, 2, 6, 732, 734, 8, 762, 2, 27, 285 })
             { 
-                testValues[i] = 0.1;
+                testValues[i] = 0.1f;
             }
-            testValues[0] = 1.0;
+            testValues[0] = 1.0f;
         }
-        static double[] testValues = new double[850];
+        static float[] testValues = new float[850];
         const string exampleDecisionTree = 
 @"0:[f0<0.99992311] yes=1,no=2,missing=1,gain=97812.25,cover=218986
 1:leaf=-0.199992761,cover=27584.75
