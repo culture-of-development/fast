@@ -13,14 +13,34 @@ namespace fast.consoleapp
         {
             // TODO: take the datasets files as params - junkfoodisbad
             var path = @"I:/culture-of-development/fast/datasets/xgboost";
-            DoDecisionTreeTimings(path);
+            var dataPath = args.Length >= 1 ? args[0] : path;
+            //DoDecisionTreeTimings(dataPath);
+            DoFeatureReordering(dataPath);
+        }
+
+        static void DoFeatureReordering(string dataPath)
+        {
+            var model = GetModel(dataPath);
+            var allPaths = model.Trees.SelectMany(FeatureReorderer.GetAllPaths).ToArray();
+            Console.WriteLine($"total paths: {allPaths.Length}");
+            Console.WriteLine($"average path length: {allPaths.Average(m => m.Length)}");
+            var pageCounts = allPaths.Select(FeatureReorderer.NumMemoryPages).ToArray();
+            var pages = pageCounts.GroupBy(m => m)
+                .Select(m => new { m.Key, Count = m.Count() })
+                .OrderBy(m => m.Key)
+                .ToArray();
+            foreach(var pageCount in pages)
+            {
+                Console.WriteLine($"  {pageCount.Key}: {pageCount.Count}");
+            }
+            Console.WriteLine($"average page count: {pageCounts.Average(m => m)}");
+            // var greedyReorderMap = FeatureReorderer.Greedy(model);
+            // File.WriteAllLines("reorder.csv", greedyReorderMap.Select(m => m.ToString()));
         }
 
         static void DoDecisionTreeTimings(string dataPath)
         {
-            var filename = Path.Combine(dataPath, @"model_xbg_trees.txt");
-            var treesString = File.ReadAllText(filename);
-            var model = XGBoost.Create(treesString);
+            var model = GetModel(dataPath);
 
             var filename2 = Path.Combine(dataPath, @"xgboost_test_cases_no_feature_names.txt");
             var samplesString = File.ReadLines(filename2);
@@ -56,6 +76,14 @@ namespace fast.consoleapp
             }
             timer.Stop();
             Console.WriteLine($"Time taken for {toRun.Length} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
+        }
+
+        private static XGBoost GetModel(string dataPath)
+        {
+            var filename = Path.Combine(dataPath, @"model_xbg_trees.txt");
+            var treesString = File.ReadAllText(filename);
+            var model = XGBoost.Create(treesString);
+            return model;
         }
     }
 }

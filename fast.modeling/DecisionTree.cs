@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -67,7 +68,7 @@ namespace fast.modeling
         }
         // leaf example: "leaf=-0.199992761,cover=27584.75"
         private static readonly Regex leafParser = new Regex(@"^leaf=([^,]+)", RegexOptions.Compiled);
-        private const int LeafIndex = -1;
+        public const int LeafIndex = -1;
         private static DecisionTreeNode ParseLeaf(string nodeInfo)
         {
             var parts = leafParser.Match(nodeInfo);
