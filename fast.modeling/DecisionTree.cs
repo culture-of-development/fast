@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace fast.modeling
 {
-    public class DecisionTree
+    public sealed class DecisionTree
     {
         public struct DecisionTreeNode
         {
@@ -19,7 +19,7 @@ namespace fast.modeling
         public DecisionTreeNode[] Nodes => nodes;
         private DecisionTreeNode first;
 
-        private DecisionTree(DecisionTreeNode[] tree)
+        public DecisionTree(DecisionTreeNode[] tree)
         {
             nodes = tree;
             first = tree[0];
@@ -41,7 +41,7 @@ namespace fast.modeling
             {
                 var f = features[node.FeatureIndex];
                 int nodeIndex = f < node.Value ? node.TrueBranch : node.FalseBranch;
-                node = nodes[nodeIndex];
+                node = nodes[nodeIndex]; // TODO: try removing array and using object graph
             }
             return node.Value;
         }

@@ -4,12 +4,12 @@ using System.Text.RegularExpressions;
 
 namespace fast.modeling
 {
-    public class XGBoost
+    public sealed class XGBoost
     {
         private DecisionTree[] trees;
         public DecisionTree[] Trees => trees;
 
-        private XGBoost(DecisionTree[] trees)
+        public XGBoost(DecisionTree[] trees)
         {
             this.trees = trees;
         }

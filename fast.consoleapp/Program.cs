@@ -21,7 +21,8 @@ namespace fast.consoleapp
         static void DoFeatureReordering(string dataPath)
         {
             var model = GetModel(dataPath);
-            var allPaths = model.Trees.SelectMany(FeatureReorderer.GetAllPaths).ToArray();
+            int numTrees = model.Trees.Length;
+            var allPaths = model.Trees.Take(numTrees).SelectMany(FeatureReorderer.GetAllPaths).ToArray();
             Console.WriteLine($"total paths: {allPaths.Length}");
             Console.WriteLine($"average path length: {allPaths.Average(m => m.Length)}");
             var pageCounts = allPaths.Select(FeatureReorderer.NumMemoryPages).ToArray();
@@ -34,8 +35,18 @@ namespace fast.consoleapp
                 Console.WriteLine($"  {pageCount.Key}: {pageCount.Count}");
             }
             Console.WriteLine($"average page count: {pageCounts.Average(m => m)}");
-            // var greedyReorderMap = FeatureReorderer.Greedy(model);
-            // File.WriteAllLines("reorder.csv", greedyReorderMap.Select(m => m.ToString()));
+            var greedyReorderMap = FeatureReorderer.Greedy(model, numTrees);
+            var allFeatureIndices = new HashSet<short>(greedyReorderMap);
+            File.WriteAllLines("reorder.csv", greedyReorderMap.Select(m => m.ToString()));
+            for(short i = 0; i < greedyReorderMap.Length; i++)
+            {
+                if (!allFeatureIndices.Contains(i)) 
+                {
+                    Console.WriteLine("The reorder mapping is not valid: not found index " + i);
+                    break;
+                }
+            }
+            // TODO: perform the remapping
         }
 
         static void DoDecisionTreeTimings(string dataPath)

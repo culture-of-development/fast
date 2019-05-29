@@ -5,6 +5,11 @@ decision tree:
         do the work to verify the perf black hole
         do the work to fix the perf black hole
     consider Ricky Bobby "i wanna go fast" emote -TheHugoDahl
+    try codegen the actual trees
+    how low can you go?
+        3.775: TheHugoDahl
+        3.85: nick_larsen
+        
 
 extract graph model from OSM so we don't have to do it every time
 set a threshold on nearest point as well
@@ -12,6 +17,11 @@ remove IProblem.GetGoalState, the algorithm doesnt need it, it's a helper for bu
 refactor the NPuzzleProblem and NPuzzle because all the logic is in NPuzzle currently
 implement the tests in the TODOs for NPuzzle
 animation showing how to solve it
+
+86,345.376‬
+25744
+100,401.6‬ (3.9)
+112,089.376 (4.354)
 
 
 remeber:

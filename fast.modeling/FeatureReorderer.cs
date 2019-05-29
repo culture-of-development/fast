@@ -15,17 +15,42 @@ namespace fast.modeling
             throw new NotImplementedException();
         }
 
-        public static short[] Greedy(XGBoost model)
+        public static XGBoost ReorderXGBoost(XGBoost model, short[] reorderMapping)
+        {
+            var reorderedTrees = model.Trees
+                .Select(m => ReorderTree(m, reorderMapping))
+                .ToArray();
+            var results = new XGBoost(reorderedTrees);
+            return results;
+        }
+
+        private static DecisionTree ReorderTree(DecisionTree model, short[] reorderMapping)
+        {
+            var reorderedNodes = model.Nodes
+                .Select(m => new DecisionTreeNode
+                {
+                    FeatureIndex = reorderMapping[m.FeatureIndex],
+                    Value = m.Value,
+                    TrueBranch = m.TrueBranch,
+                    FalseBranch = m.FalseBranch,
+                })
+                .ToArray();
+            var result = new DecisionTree(reorderedNodes);
+            return result;
+        }
+
+        public static short[] Greedy(XGBoost model, int treeCount)
         {
             Console.WriteLine("doing greedy search");
-            var allPaths = model.Trees.SelectMany(GetAllPaths).ToArray();
+            var allPaths = model.Trees.Take(treeCount).SelectMany(GetAllPaths).ToArray();
             var nodeLookups = allPaths
                 .SelectMany(m => m)
                 .Distinct()
+                .Where(m => m.FeatureIndex >= 0)
                 .GroupBy(m => m.FeatureIndex)
                 .ToDictionary(m => m.Key, m => m.ToArray());
-            var features = allPaths.SelectMany(m => m.Select(j => j.FeatureIndex)).Distinct().ToArray();
-            for(short i = 0; (int)i < features.Max(); i++)
+            var featuresMax = allPaths.SelectMany(m => m.Select(j => j.FeatureIndex)).Max();
+            for(short i = 0; (int)i <= featuresMax; i++)
             {
                 if (!nodeLookups.ContainsKey(i))
                 {
@@ -34,19 +59,17 @@ namespace fast.modeling
             }
             double best = allPaths.Average(NumMemoryPages);
             int sinceImprovement = 0;
-            const int maxImprovementDelay = 1_000;
+            const int maxImprovementDelay = 10_000;
             while (true)
             {
                 Console.WriteLine(" loop");
                 bool improved = false;
-                for(int i = 0; i < features.Length; i++)
+                for(int i = 0; i < featuresMax; i++)
                 {
                     short ii = (short)i;
-                    if (!nodeLookups.ContainsKey(ii)) continue;
-                    for(int j = i + 1; j < features.Length; j++)
+                    for(int j = i + 1; j < featuresMax; j++)
                     {
                         short jj = (short)j;
-                        if (!nodeLookups.ContainsKey(jj)) continue;
                         var nodesI = nodeLookups[ii];
                         var nodesJ = nodeLookups[jj];
                         // do swap
@@ -69,8 +92,8 @@ namespace fast.modeling
                         {
                             sinceImprovement++;
                             // else undo that shit
-                            for(int x = 0; x < nodesI.Length; x++) nodesI[x].FeatureIndex = jj;
-                            for(int x = 0; x < nodesJ.Length; x++) nodesJ[x].FeatureIndex = ii;
+                            for(int x = 0; x < nodesI.Length; x++) nodesI[x].FeatureIndex = ii;
+                            for(int x = 0; x < nodesJ.Length; x++) nodesJ[x].FeatureIndex = jj;
                         }
                         if (sinceImprovement > maxImprovementDelay) break;
                     }
@@ -133,7 +156,7 @@ namespace fast.modeling
             // this was determined using unsafe sizeof
             // this approach is very optimistic making assumptions of
             // aligned memory and all that, might want to force that later
-            const int DecisionTreeNodeMemorySize = 8;
+            const int DecisionTreeNodeMemorySize = 16;
             // the goal here is to be able to estimate the number of pages
             // swapped out during a typical pass through all trees
             // this isn't quite there, instead opting to just check number
