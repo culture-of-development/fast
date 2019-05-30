@@ -78,7 +78,7 @@ namespace fast.modeling.tests
             for(; i < 2; i++)
             foreach(var sample in samples)
             {
-                var actual = model.EvaluateProbability(sample.Value);
+                var actual = model.EvaluateProbabilityCompiled(sample.Value);
                 var expected = sample.Value[probablity_feature_index];
                 Assert.InRange(actual, expected - 1e-06, expected + 1e06);
             }
@@ -156,6 +156,8 @@ namespace fast.modeling.tests
                 .Concat(samples.Select(m => m.Value))
                 .OrderBy(m => r.Next())
                 .ToArray();
+            model.EvaluateProbabilityCompiled(toRun);
+            model.EvaluateProbabilityCompiled(toRun);
 
             var timer = Stopwatch.StartNew();
             // var results = new double[toRun.Length];
@@ -163,7 +165,7 @@ namespace fast.modeling.tests
             // {
             //     results[i] = model.EvaluateProbability(toRun[i]);
             // }
-            var results = model.EvaluateProbability(toRun);
+            var results = model.EvaluateProbabilityCompiled(toRun);
             timer.Stop();
             output.WriteLine($"Time taken for {toRun.Length} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
         }

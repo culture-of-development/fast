@@ -53,7 +53,7 @@ void TestCompileTree()
 
 	var results = new float[1000];
 	var timer1 = Stopwatch.StartNew();
-	for (int i = 0; i < 10_000_000; i++)
+	for (int i = 0; i < 100_000_000; i++)
 	{
 		results[i % 1000] = eval(features);
 	}
@@ -61,7 +61,7 @@ void TestCompileTree()
 
 	var results2 = new float[1000];
 	var timer2 = Stopwatch.StartNew();
-	for (int i = 0; i < 10_000_000; i++)
+	for (int i = 0; i < 100_000_000; i++)
 	{
 		results2[i % 1000] = del(features);
 	}
@@ -69,7 +69,7 @@ void TestCompileTree()
 
 	var results3 = new float[1000];
 	var timer3 = Stopwatch.StartNew();
-	for (int i = 0; i < 10_000_000; i++)
+	for (int i = 0; i < 100_000_000; i++)
 	{
 		results3[i % 1000] = dt.Evaluate(features);
 	}

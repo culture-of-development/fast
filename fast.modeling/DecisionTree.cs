@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Sigil;
 
 namespace fast.modeling
 {
@@ -46,6 +47,41 @@ namespace fast.modeling
                 node = nodes[nodeIndex]; // TODO: try removing array and using object graph
             }
             return node.Value;
+        }
+
+        public Func<float[], float> Compile()
+        {
+            var e1 = Emit<Func<float[], float>>.NewDynamicMethod();
+            var stack = new Stack<(Label, DecisionTree.DecisionTreeNode)>();
+            stack.Push((e1.DefineLabel("node_0"), nodes[0]));
+            while(stack.Count > 0)
+            {
+                var (label, node) = stack.Pop();
+                e1.MarkLabel(label);
+                if (node.FeatureIndex == -1)
+                {
+                    // we're in a leaf, do a return
+                    e1.LoadConstant(node.Value);
+                    e1.Return();
+                }
+                else
+                {
+                    // create the the child labels
+                    // create the branch
+                    // push the children
+                    var leftLabel = e1.DefineLabel("node_" + node.TrueBranch);
+                    var rightLabel = e1.DefineLabel("node_" + node.FalseBranch);
+                    e1.LoadArgument(0);
+                    e1.LoadConstant(node.FeatureIndex);
+                    e1.LoadElement(typeof(float));
+                    e1.LoadConstant(node.Value);
+                    e1.BranchIfGreater(rightLabel);
+                    stack.Push((rightLabel, nodes[node.FalseBranch]));
+                    stack.Push((leftLabel, nodes[node.TrueBranch]));
+                }
+            }
+            var del = e1.CreateDelegate();
+            return del;
         }
 
         public static DecisionTree Create(string definition)

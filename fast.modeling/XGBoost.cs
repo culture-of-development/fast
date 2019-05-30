@@ -9,9 +9,12 @@ namespace fast.modeling
         private DecisionTree[] trees;
         public DecisionTree[] Trees => trees;
 
+        private Func<float[], float>[] compiledTrees;
+
         public XGBoost(DecisionTree[] trees)
         {
             this.trees = trees;
+            this.compiledTrees = trees.Select(m => m.Compile()).ToArray();
         }
 
         public double EvaluateProbability(float[] instance)
@@ -25,14 +28,41 @@ namespace fast.modeling
             return result;
         }
 
+        public double EvaluateProbabilityCompiled(float[] instance)
+        {
+            var sum = 0f;
+            for (int i = 0; i < compiledTrees.Length; i++)
+            {
+                sum += compiledTrees[i](instance);
+            }
+            var result = Logit(sum);
+            return result;
+        }
+
         public double[] EvaluateProbability(float[][] instances)
         {
             var sums = new float[instances.Length];
             for (int i = 0; i < trees.Length; i++)
             {
+                var eval = trees[i];
                 for(int j = 0; j < instances.Length; j++)
                 {
-                    sums[j] += trees[i].Evaluate(instances[i]);
+                    sums[j] += eval.Evaluate(instances[i]);
+                }
+            }
+            var result = Logit(sums);
+            return result;
+        }
+
+        public double[] EvaluateProbabilityCompiled(float[][] instances)
+        {
+            var sums = new float[instances.Length];
+            for (int i = 0; i < trees.Length; i++)
+            {
+                var eval = compiledTrees[i];
+                for(int j = 0; j < instances.Length; j++)
+                {
+                    sums[j] += eval(instances[i]);
                 }
             }
             var result = Logit(sums);
