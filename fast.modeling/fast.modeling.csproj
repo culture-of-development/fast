@@ -5,4 +5,8 @@
     <RootNamespace>fast.modeling</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="sigil" Version="4.7.0" />
+  </ItemGroup>
+
 </Project>
