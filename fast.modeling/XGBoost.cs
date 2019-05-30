@@ -25,9 +25,34 @@ namespace fast.modeling
             return result;
         }
 
+        public double[] EvaluateProbability(float[][] instances)
+        {
+            var sums = new float[instances.Length];
+            for (int i = 0; i < trees.Length; i++)
+            {
+                for(int j = 0; j < instances.Length; j++)
+                {
+                    sums[j] += trees[i].Evaluate(instances[i]);
+                }
+            }
+            var result = Logit(sums);
+            return result;
+        }
+
         private double Logit(double value)
         {
             return 1d / (1d+Math.Exp(-value));
+        }
+
+        private double[] Logit(float[] values)
+        {
+            // can probably vectorize this
+            double[] result = new double[values.Length];
+            for(int i = 0; i < values.Length; i++)
+            {
+                result[i] = Logit((double)values[i]);
+            }
+            return result;
         }
 
 

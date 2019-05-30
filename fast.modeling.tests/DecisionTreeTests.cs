@@ -87,6 +87,42 @@ namespace fast.modeling.tests
         }
 
         [Fact]
+        public void TestXGBoostEvaluateTimingReordered()
+        {
+            var filename1 = @"../../../../datasets/xgboost/reorder.csv";
+            var reorderMapping = File.ReadAllLines(filename1)
+                .Select(m => short.Parse(m))
+                .ToArray();
+
+            var filename = @"../../../../datasets/xgboost/model_xbg_trees.txt";
+            var treesString = File.ReadAllText(filename);
+            var model = XGBoost.Create(treesString);
+            model = FeatureReorderer.ReorderXGBoost(model, reorderMapping);
+
+            var filename2 = @"../../../../datasets/xgboost/xgboost_test_cases_no_feature_names.txt";
+            var samplesString = File.ReadLines(filename2);
+            var samples = new Dictionary<string, float[]>();
+            foreach(var line in samplesString.Skip(1))
+            {
+                var parts = line.Split(',');
+                var sample = parts[0];
+                var featureIndex = int.Parse(parts[1]);
+                if (featureIndex >= 0 && featureIndex < reorderMapping.Length)
+                {
+                    featureIndex = reorderMapping[featureIndex];
+                }
+                var value = float.Parse(parts[2]);
+                if (!samples.ContainsKey(sample))
+                {
+                    samples.Add(sample, new float[1000]);
+                }
+                samples[sample][featureIndex] = value;
+            }
+
+            DoXGBoostEvaluateTiming(model, samples);
+        }
+
+        [Fact]
         public void TestXGBoostEvaluateTiming()
         {
             var filename = @"../../../../datasets/xgboost/model_xbg_trees.txt";
@@ -109,6 +145,12 @@ namespace fast.modeling.tests
                 samples[sample][featureIndex] = value;
             }
 
+            DoXGBoostEvaluateTiming(model, samples);
+        }
+
+
+        private void DoXGBoostEvaluateTiming(XGBoost model, Dictionary<string, float[]> samples)
+        {
             Random r = new Random(20190524);
             var toRun = samples.Select(m => m.Value)
                 .Concat(samples.Select(m => m.Value))
@@ -116,11 +158,12 @@ namespace fast.modeling.tests
                 .ToArray();
 
             var timer = Stopwatch.StartNew();
-            var results = new double[toRun.Length];
-            for(int i = 0; i < toRun.Length; i++)
-            {
-                results[i] = model.EvaluateProbability(toRun[i]);
-            }
+            // var results = new double[toRun.Length];
+            // for(int i = 0; i < toRun.Length; i++)
+            // {
+            //     results[i] = model.EvaluateProbability(toRun[i]);
+            // }
+            var results = model.EvaluateProbability(toRun);
             timer.Stop();
             output.WriteLine($"Time taken for {toRun.Length} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
         }

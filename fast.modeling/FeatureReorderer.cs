@@ -29,7 +29,7 @@ namespace fast.modeling
             var reorderedNodes = model.Nodes
                 .Select(m => new DecisionTreeNode
                 {
-                    FeatureIndex = reorderMapping[m.FeatureIndex],
+                    FeatureIndex = m.FeatureIndex < 0 ? m.FeatureIndex : reorderMapping[m.FeatureIndex],
                     Value = m.Value,
                     TrueBranch = m.TrueBranch,
                     FalseBranch = m.FalseBranch,
@@ -57,9 +57,9 @@ namespace fast.modeling
                     nodeLookups[i] = new[] { new DecisionTreeNode2 { FeatureIndex = i, OriginalIndex = i } };
                 }
             }
-            double best = allPaths.Average(NumMemoryPages);
+            double best = EvalAveragePages(allPaths);
             int sinceImprovement = 0;
-            const int maxImprovementDelay = 10_000;
+            const int maxImprovementDelay = 25_000;
             while (true)
             {
                 Console.WriteLine(" loop");
@@ -67,8 +67,9 @@ namespace fast.modeling
                 for(int i = 0; i < featuresMax; i++)
                 {
                     short ii = (short)i;
-                    for(int j = i + 1; j < featuresMax; j++)
+                    for(int j = 0; j < featuresMax; j++)
                     {
+                        if (i==j) continue;
                         short jj = (short)j;
                         var nodesI = nodeLookups[ii];
                         var nodesJ = nodeLookups[jj];
@@ -76,7 +77,7 @@ namespace fast.modeling
                         for(int x = 0; x < nodesI.Length; x++) nodesI[x].FeatureIndex = jj;
                         for(int x = 0; x < nodesJ.Length; x++) nodesJ[x].FeatureIndex = ii;
                         // eval score
-                        double possible = allPaths.Average(NumMemoryPages);
+                        double possible = EvalAveragePages(allPaths);
                         //Console.WriteLine($"  {i}, {j}, {best}, {possible}");
                         // set best if necessary
                         if (possible < best) 
@@ -86,6 +87,7 @@ namespace fast.modeling
                             nodeLookups[jj] = nodesI;
                             improved = true;
                             sinceImprovement = 0;
+                            UpdateBestMap(nodeLookups);
                             Console.WriteLine($" new best: {best}");
                         }
                         else 
@@ -101,6 +103,13 @@ namespace fast.modeling
                 }
                 if (!improved || sinceImprovement > maxImprovementDelay) break;
             }
+            UpdateBestMap(nodeLookups);
+            return bestMap;
+        }
+
+        public static short[] bestMap = null;
+        private static void UpdateBestMap(Dictionary<short, DecisionTreeNode2[]> nodeLookups)
+        {
             var map = nodeLookups
                 .SelectMany(m => m.Value)
                 .GroupBy(m => m.OriginalIndex)
@@ -109,8 +118,23 @@ namespace fast.modeling
             {
                 throw new Exception("bad map");
             }
-            var result = map.OrderBy(m => m.Key).Select(m => m.Value.First()).ToArray();
-            return result;
+            bestMap = map.OrderBy(m => m.Key).Select(m => m.Value.First()).ToArray();
+        }
+
+        public static float EvalAveragePages(DecisionTreeNode2[][] allPaths)
+        {
+            return allPaths
+                .GroupBy(m => m[0])
+                .ToDictionary(m => m.Key, m => m.ToArray())
+                .Select(m => m.Value
+                    .Sum(path => {
+                        var pageCount = NumMemoryPages(path);
+                        var weight = 1f; //path[path.Length-1].Cover / path[0].Cover;
+                        var weightedPageCount = pageCount * weight;
+                        return weightedPageCount;
+                    })
+                )
+                .Average();
         }
 
         public static IEnumerable<DecisionTreeNode2[]> GetAllPaths(DecisionTree tree)
@@ -125,6 +149,7 @@ namespace fast.modeling
         {
             public short FeatureIndex;
             public short OriginalIndex;
+            public float Cover;
         }
         public static DecisionTreeNode2 MapNode(DecisionTreeNode node)
         {
@@ -132,6 +157,7 @@ namespace fast.modeling
             {
                 FeatureIndex = node.FeatureIndex,
                 OriginalIndex = node.FeatureIndex,
+                //Cover = node.Cover,
             };
         }
 
