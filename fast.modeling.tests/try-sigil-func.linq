@@ -38,18 +38,46 @@ void TestCompileTree()
 			e1.LoadElement(typeof(float));
 			e1.LoadConstant(node.Value);
 			e1.BranchIfGreater(rightLabel);
-			stack.Push((leftLabel, dt.Nodes[node.TrueBranch]));
 			stack.Push((rightLabel, dt.Nodes[node.FalseBranch]));
+			stack.Push((leftLabel, dt.Nodes[node.TrueBranch]));
 		}
 	}
 	var del = e1.CreateDelegate();
-
+	
 	var random = new Random();
 	var features = Enumerable.Range(0, 850).Select(m => (float)random.NextDouble()).ToArray();
 	features[0] *= 2;
-	
 	del(features).Dump("del");
 	eval(features).Dump("eval");
+	dt.Evaluate(features).Dump("dt");
+
+	var results = new float[1000];
+	var timer1 = Stopwatch.StartNew();
+	for (int i = 0; i < 10_000_000; i++)
+	{
+		results[i % 1000] = eval(features);
+	}
+	timer1.Stop();
+
+	var results2 = new float[1000];
+	var timer2 = Stopwatch.StartNew();
+	for (int i = 0; i < 10_000_000; i++)
+	{
+		results2[i % 1000] = del(features);
+	}
+	timer2.Stop();
+
+	var results3 = new float[1000];
+	var timer3 = Stopwatch.StartNew();
+	for (int i = 0; i < 10_000_000; i++)
+	{
+		results3[i % 1000] = dt.Evaluate(features);
+	}
+	timer3.Stop();
+
+	timer1.Elapsed.TotalMilliseconds.Dump("func");
+	timer2.Elapsed.TotalMilliseconds.Dump("del");
+	timer3.Elapsed.TotalMilliseconds.Dump("dt");
 }
 
 void TestThing()
