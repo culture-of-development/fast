@@ -86,7 +86,7 @@ namespace fast.modeling
         }
 
 
-        private static readonly Regex treeSplit = new Regex(@"^booster\[\d+\]\n", RegexOptions.Compiled | RegexOptions.Multiline);
+        private static readonly Regex treeSplit = new Regex(@"^booster\[\d+\]\r?\n", RegexOptions.Compiled | RegexOptions.Multiline);
         public static XGBoost Create(string allTrees)
         {
             var treeStrings = treeSplit.Split(allTrees);
