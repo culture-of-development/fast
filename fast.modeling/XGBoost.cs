@@ -47,7 +47,7 @@ namespace fast.modeling
                 var eval = trees[i];
                 for(int j = 0; j < instances.Length; j++)
                 {
-                    resultBuffer[j] += eval.Evaluate(userFeatures, instances[i]);
+                    resultBuffer[j] += eval.Evaluate(userFeatures, instances[j]);
                 }
             }
             Logit(resultBuffer);
@@ -60,7 +60,7 @@ namespace fast.modeling
                 var eval = compiledTrees[i];
                 for(int j = 0; j < jobFeatures.Length; j++)
                 {
-                    resultBuffer[j] += eval(userFeatures, jobFeatures[i]);
+                    resultBuffer[j] += eval(userFeatures, jobFeatures[j]);
                 }
             }
             Logit(resultBuffer);
