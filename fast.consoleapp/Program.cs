@@ -15,23 +15,23 @@ namespace fast.consoleapp
             // TODO: take the datasets files as params - junkfoodisbad
             var path = @"I:/culture-of-development/fast/datasets/xgboost";
             var dataPath = args.Length >= 1 ? args[0] : path;
-            DoDecisionTreeTimings(dataPath, null);
+            DoDecisionTreeTimings(dataPath, null, 640);
             //DoFeatureReordering(dataPath);
             //CheckFeatureReordering(dataPath);
             // var reorderMapping = GetReorderMapping(path);
             // DoDecisionTreeTimings(dataPath, reorderMapping);
         }
 
-        static void CheckFeatureReordering(string dataPath)
-        {
-            var model = GetModel(dataPath, null);
-            ModelSummary(model);
+        // static void CheckFeatureReordering(string dataPath)
+        // {
+        //     var model = GetModel(dataPath, null);
+        //     ModelSummary(model);
 
-            Console.WriteLine("\nReordered");
-            var reorderMapping = GetReorderMapping("reorder.csv");
-            var reorderedModel = FeatureReorderer.ReorderXGBoost(model, reorderMapping);
-            ModelSummary(reorderedModel);
-        }
+        //     Console.WriteLine("\nReordered");
+        //     var reorderMapping = GetReorderMapping("reorder.csv");
+        //     var reorderedModel = FeatureReorderer.ReorderXGBoost(model, reorderMapping);
+        //     ModelSummary(reorderedModel);
+        // }
 
         private static void ModelSummary(XGBoost model)
         {
@@ -50,9 +50,9 @@ namespace fast.consoleapp
             Console.WriteLine($"average page count: {pageCounts.Average(m => m)}");
         }
 
-        static void DoFeatureReordering(string dataPath)
+        static void DoFeatureReordering(string dataPath, int userFeaturesCount)
         {
-            var model = GetModel(dataPath, null);
+            var model = GetModel(dataPath, null, userFeaturesCount);
             int numTrees = model.Trees.Length;
             var timer = new Timer(SaveBestFeatures, dataPath, 60_000, 60_000);
             var greedyReorderMap = FeatureReorderer.Greedy(model, numTrees);
@@ -76,20 +76,25 @@ namespace fast.consoleapp
             File.WriteAllLines(filename, FeatureReorderer.bestMap.Select(m => m.ToString()));
         }
 
-        static void DoDecisionTreeTimings(string dataPath, short[] reorderMapping)
+        static void DoDecisionTreeTimings(string dataPath, short[] reorderMapping, int userFeaturesCount)
         {
-            var model = GetModel(dataPath, reorderMapping);
+            var model = GetModel(dataPath, reorderMapping, userFeaturesCount);
             var samples = GetSamples(dataPath, reorderMapping);
 
+            var userFeatures = samples.First().Value.Take(userFeaturesCount).ToArray();
+
             Random r = new Random(20190524);
-            var toRun = samples.Select(m => m.Value)
-                .Concat(samples.Select(m => m.Value))
+            var jobSamples = samples
+                .Select(m => m.Value.Skip(userFeaturesCount).ToArray())
+                .ToArray();
+            var toRun = jobSamples
+                .Concat(jobSamples)
                 .OrderBy(m => r.Next())
                 .ToArray();
+            var resultsBuffer = new double[toRun.Length];
 
             var timer = Stopwatch.StartNew();
             //var results = new double[toRun.Length];
-            double[] results;
             for (int _ = 0; _ < 20; _++)
             {
                 Console.WriteLine(_);
@@ -97,20 +102,20 @@ namespace fast.consoleapp
                 // {
                 //     results[i] = model.EvaluateProbability(toRun[i]);
                 // }
-                results = model.EvaluateProbability(toRun);
+                model.EvaluateProbability(userFeatures, toRun, resultsBuffer);
             }
             timer.Stop();
             Console.WriteLine($"Time taken for {toRun.Length} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
         }
 
-        private static XGBoost GetModel(string dataPath, short[] reorderMapping)
+        private static XGBoost GetModel(string dataPath, short[] reorderMapping, int userFeaturesCount)
         {
             var filename = Path.Combine(dataPath, @"model_xbg_trees.txt");
             var treesString = File.ReadAllText(filename);
-            var model = XGBoost.Create(treesString);
+            var model = XGBoost.Create(treesString, userFeaturesCount);
             if (reorderMapping != null)
             {
-                model = FeatureReorderer.ReorderXGBoost(model, reorderMapping);
+                model = FeatureReorderer.ReorderXGBoost(model, reorderMapping, userFeaturesCount);
             }
             return model;
         }

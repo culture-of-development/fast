@@ -15,12 +15,12 @@ namespace fast.modeling
             throw new NotImplementedException();
         }
 
-        public static XGBoost ReorderXGBoost(XGBoost model, short[] reorderMapping)
+        public static XGBoost ReorderXGBoost(XGBoost model, short[] reorderMapping, int userFeaturesCount)
         {
             var reorderedTrees = model.Trees
                 .Select(m => ReorderTree(m, reorderMapping))
                 .ToArray();
-            var results = new XGBoost(reorderedTrees);
+            var results = new XGBoost(reorderedTrees, userFeaturesCount);
             return results;
         }
 

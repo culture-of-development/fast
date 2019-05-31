@@ -37,21 +37,30 @@ namespace fast.modeling
             return string.Join("\n", lines);
         }
 
-        public float Evaluate(float[] features)
+        public float Evaluate(float[] userFeatures, float[] jobFeatures)
         {
             var node = this.first;
             while(node.FeatureIndex != LeafIndex)
             {
-                var f = features[node.FeatureIndex];
-                int nodeIndex = f < node.Value ? node.TrueBranch : node.FalseBranch;
-                node = nodes[nodeIndex]; // TODO: try removing array and using object graph
+                if (node.FeatureIndex > userFeatures.Length)
+                {
+                    var f = jobFeatures[node.FeatureIndex-userFeatures.Length];
+                    int nodeIndex = f < node.Value ? node.TrueBranch : node.FalseBranch;
+                    node = nodes[nodeIndex]; 
+                }
+                else
+                {
+                    var f = userFeatures[node.FeatureIndex];
+                    int nodeIndex = f < node.Value ? node.TrueBranch : node.FalseBranch;
+                    node = nodes[nodeIndex];
+                }
             }
             return node.Value;
         }
 
-        public Func<float[], float> Compile()
+        public Func<float[], float[], float> Compile(int userFeaturesCount)
         {
-            var e1 = Emit<Func<float[], float>>.NewDynamicMethod();
+            var e1 = Emit<Func<float[], float[], float>>.NewDynamicMethod();
             var stack = new Stack<(Label, DecisionTree.DecisionTreeNode)>();
             stack.Push((e1.DefineLabel("node_0"), nodes[0]));
             while(stack.Count > 0)
@@ -71,8 +80,16 @@ namespace fast.modeling
                     // push the children
                     var leftLabel = e1.DefineLabel("node_" + node.TrueBranch);
                     var rightLabel = e1.DefineLabel("node_" + node.FalseBranch);
-                    e1.LoadArgument(0);
-                    e1.LoadConstant(node.FeatureIndex);
+                    if (node.FeatureIndex >= userFeaturesCount)
+                    {
+                        e1.LoadArgument(1);
+                        e1.LoadConstant(node.FeatureIndex-userFeaturesCount);
+                    }
+                    else
+                    {
+                        e1.LoadArgument(0);
+                        e1.LoadConstant(node.FeatureIndex);
+                    }
                     e1.LoadElement(typeof(float));
                     e1.LoadConstant(node.Value);
                     e1.BranchIfGreater(rightLabel);
