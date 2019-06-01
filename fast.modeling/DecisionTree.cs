@@ -42,7 +42,7 @@ namespace fast.modeling
             var node = this.first;
             while(node.FeatureIndex != LeafIndex)
             {
-                if (node.FeatureIndex > userFeatures.Length)
+                if (node.FeatureIndex >= userFeatures.Length)
                 {
                     var f = jobFeatures[node.FeatureIndex-userFeatures.Length];
                     int nodeIndex = f < node.Value ? node.TrueBranch : node.FalseBranch;

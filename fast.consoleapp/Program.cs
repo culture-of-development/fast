@@ -92,17 +92,19 @@ namespace fast.consoleapp
                 .OrderBy(m => r.Next())
                 .ToArray();
             var resultsBuffer = new double[toRun.Length];
+            model.EvaluateProbabilityCompiled(userFeatures, toRun, resultsBuffer);
+            model.EvaluateProbabilityCompiled(userFeatures, toRun, resultsBuffer);
 
             var timer = Stopwatch.StartNew();
             //var results = new double[toRun.Length];
-            for (int _ = 0; _ < 20; _++)
+            for (int _ = 0; _ < 100; _++)
             {
-                Console.WriteLine(_);
+                //Console.WriteLine(_);
                 // for (int i = 0; i < toRun.Length; i++)
                 // {
                 //     results[i] = model.EvaluateProbability(toRun[i]);
                 // }
-                model.EvaluateProbability(userFeatures, toRun, resultsBuffer);
+                model.EvaluateProbabilityCompiled(userFeatures, toRun, resultsBuffer);
             }
             timer.Stop();
             Console.WriteLine($"Time taken for {toRun.Length} evaluations: {timer.Elapsed.TotalMilliseconds} ms");

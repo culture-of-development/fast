@@ -88,41 +88,41 @@ namespace fast.modeling.tests
         //     output.WriteLine($"Time taken for {i*samples.Count} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
         // }
 
-        // [Fact]
-        // public void TestXGBoostEvaluateTimingReordered()
-        // {
-        //     var filename1 = @"../../../../datasets/xgboost/reorder.csv";
-        //     var reorderMapping = File.ReadAllLines(filename1)
-        //         .Select(m => short.Parse(m))
-        //         .ToArray();
+        [Fact]
+        public void TestXGBoostEvaluateTimingReordered()
+        {
+            var filename1 = @"../../../../datasets/xgboost/reorder.csv";
+            var reorderMapping = File.ReadAllLines(filename1)
+                .Select(m => short.Parse(m))
+                .ToArray();
 
-        //     var filename = @"../../../../datasets/xgboost/model_xbg_trees.txt";
-        //     var treesString = File.ReadAllText(filename);
-        //     var model = XGBoost.Create(treesString);
-        //     model = FeatureReorderer.ReorderXGBoost(model, reorderMapping);
+            var filename = @"../../../../datasets/xgboost/model_xbg_trees.txt";
+            var treesString = File.ReadAllText(filename);
+            var model = XGBoost.Create(treesString, UserFeaturesCount);
+            model = FeatureReorderer.ReorderXGBoost(model, reorderMapping, UserFeaturesCount);
 
-        //     var filename2 = @"../../../../datasets/xgboost/xgboost_test_cases_no_feature_names.txt";
-        //     var samplesString = File.ReadLines(filename2);
-        //     var samples = new Dictionary<string, float[]>();
-        //     foreach(var line in samplesString.Skip(1))
-        //     {
-        //         var parts = line.Split(',');
-        //         var sample = parts[0];
-        //         var featureIndex = int.Parse(parts[1]);
-        //         if (featureIndex >= 0 && featureIndex < reorderMapping.Length)
-        //         {
-        //             featureIndex = reorderMapping[featureIndex];
-        //         }
-        //         var value = float.Parse(parts[2]);
-        //         if (!samples.ContainsKey(sample))
-        //         {
-        //             samples.Add(sample, new float[1000]);
-        //         }
-        //         samples[sample][featureIndex] = value;
-        //     }
+            var filename2 = @"../../../../datasets/xgboost/xgboost_test_cases_no_feature_names.txt";
+            var samplesString = File.ReadLines(filename2);
+            var samples = new Dictionary<string, float[]>();
+            foreach(var line in samplesString.Skip(1))
+            {
+                var parts = line.Split(',');
+                var sample = parts[0];
+                var featureIndex = int.Parse(parts[1]);
+                if (featureIndex >= 0 && featureIndex < reorderMapping.Length)
+                {
+                    featureIndex = reorderMapping[featureIndex];
+                }
+                var value = float.Parse(parts[2]);
+                if (!samples.ContainsKey(sample))
+                {
+                    samples.Add(sample, new float[1000]);
+                }
+                samples[sample][featureIndex] = value;
+            }
 
-        //     DoXGBoostEvaluateTiming(model, samples);
-        // }
+            DoXGBoostEvaluateTiming(model, samples);
+        }
 
         [Fact]
         public void TestXGBoostEvaluateTiming()
