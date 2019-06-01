@@ -36,7 +36,7 @@ namespace fast.modeling.tests
             var dt = DecisionTree.Create(exampleDecisionTree);
             var actual = dt.Evaluate(testValues);
             var expected = 0.077062957;
-            Assert.InRange(actual, expected - 1e-06, expected + 1e06);
+            Assert.InRange(actual, expected - 1e-06, expected + 1e-06);
         }
 
 
@@ -78,9 +78,9 @@ namespace fast.modeling.tests
             for(; i < 2; i++)
             foreach(var sample in samples)
             {
-                var actual = model.EvaluateProbabilityCompiled(sample.Value);
+                var actual = model.EvaluateProbabilityFlat(sample.Value);
                 var expected = sample.Value[probablity_feature_index];
-                Assert.InRange(actual, expected - 1e-06, expected + 1e06);
+                Assert.InRange(actual, expected - 1e-06, expected + 1e-06);
             }
             timer.Stop();
             output.WriteLine($"Time taken for {i*samples.Count} evaluations: {timer.Elapsed.TotalMilliseconds} ms");

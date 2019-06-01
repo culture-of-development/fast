@@ -22,10 +22,27 @@ namespace fast.modeling
         public DecisionTreeNode[] Nodes => nodes;
         private DecisionTreeNode first;
 
+        public float[] Values;
+        public short[] FeatureIndexes;
+        public const int FlatSize = 64;
+
         public DecisionTree(DecisionTreeNode[] tree)
         {
             nodes = tree;
             first = tree[0];
+        
+            Values = new float[FlatSize];
+            FeatureIndexes = new short[FlatSize];
+            Expand(first, 0);
+        }
+
+        private void Expand(DecisionTreeNode node, int index)
+        {
+            Values[index] = node.Value;
+            FeatureIndexes[index] = node.FeatureIndex;
+            if (node.FeatureIndex == LeafIndex) return;
+            Expand(nodes[node.TrueBranch], index * 2 + 1);
+            Expand(nodes[node.FalseBranch], index * 2 + 2);
         }
 
         public override string ToString()
@@ -47,6 +64,26 @@ namespace fast.modeling
                 node = nodes[nodeIndex]; // TODO: try removing array and using object graph
             }
             return node.Value;
+        }
+
+        public float EvaluateFlat(float[] features)
+        {
+            int index = 0;
+            int featIndex = FeatureIndexes[index];
+            while (featIndex != LeafIndex)
+            {
+                var f = features[featIndex];
+                if (features[featIndex] < Values[index])
+                {
+                    index = index * 2 + 1;
+                }
+                else
+                {
+                    index = index * 2 + 2;
+                }
+                featIndex = FeatureIndexes[index];
+            }
+            return Values[index];
         }
 
         public Func<float[], float> Compile()
