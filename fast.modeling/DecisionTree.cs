@@ -24,18 +24,19 @@ namespace fast.modeling
 
         public float[] Values;
         public short[] FeatureIndexes;
-        public const int FlatSize = 64;
 
         public DecisionTree(DecisionTreeNode[] tree)
         {
             nodes = tree;
             first = tree[0];
-        
-            Values = new float[FlatSize];
-            FeatureIndexes = new short[FlatSize];
-            Expand(first, 0);
         }
 
+        public void PrepareFlat(int flatSize)
+        {
+            Values = new float[flatSize];
+            FeatureIndexes = new short[flatSize];
+            Expand(first, 0);
+        }
         private void Expand(DecisionTreeNode node, int index)
         {
             Values[index] = node.Value;

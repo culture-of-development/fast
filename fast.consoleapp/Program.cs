@@ -89,7 +89,7 @@ namespace fast.consoleapp
 
             var timer = Stopwatch.StartNew();
             //var results = new double[toRun.Length];
-            double[] results;
+            float[] results;
             for (int _ = 0; _ < 20; _++)
             {
                 Console.WriteLine(_);

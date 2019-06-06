@@ -54,7 +54,7 @@ namespace fast.modeling.tests
         {
             var filename = @"../../../../datasets/xgboost/model_xbg_trees.txt";
             var treesString = File.ReadAllText(filename);
-            var model = XGBoost.Create(treesString);
+            var model = XGBoost.Create(treesString, prepareShrink: true);
 
             var filename2 = @"../../../../datasets/xgboost/xgboost_test_cases_no_feature_names.txt";
             var samplesString = File.ReadLines(filename2);
@@ -78,7 +78,9 @@ namespace fast.modeling.tests
             for(; i < 2; i++)
             foreach(var sample in samples)
             {
-                var actual = model.EvaluateProbabilityFlat(sample.Value);
+                var userFeatures = sample.Value.Take(639).ToArray();
+                var jobFeatures = sample.Value.Skip(639).ToArray();
+                var actual = model.EvaluateProbabilityFlatShrink(userFeatures, jobFeatures);
                 var expected = sample.Value[probablity_feature_index];
                 Assert.InRange(actual, expected - 1e-06, expected + 1e-06);
             }
@@ -119,7 +121,7 @@ namespace fast.modeling.tests
                 samples[sample][featureIndex] = value;
             }
 
-            DoXGBoostEvaluateTiming(model, samples);
+            DoXGBoostEvaluateTimingFlat(model, samples);
         }
 
         [Fact]
@@ -127,7 +129,7 @@ namespace fast.modeling.tests
         {
             var filename = @"../../../../datasets/xgboost/model_xbg_trees.txt";
             var treesString = File.ReadAllText(filename);
-            var model = XGBoost.Create(treesString);
+            var model = XGBoost.Create(treesString, prepareShrink: true);
 
             var filename2 = @"../../../../datasets/xgboost/xgboost_test_cases_no_feature_names.txt";
             var samplesString = File.ReadLines(filename2);
@@ -145,11 +147,11 @@ namespace fast.modeling.tests
                 samples[sample][featureIndex] = value;
             }
 
-            DoXGBoostEvaluateTiming(model, samples);
+            DoXGBoostEvaluateTimingFlatShrink(model, samples);
         }
 
 
-        private void DoXGBoostEvaluateTiming(XGBoost model, Dictionary<string, float[]> samples)
+        private void DoXGBoostEvaluateTimingCompiled(XGBoost model, Dictionary<string, float[]> samples)
         {
             Random r = new Random(20190524);
             var toRun = samples.Select(m => m.Value)
@@ -166,6 +168,42 @@ namespace fast.modeling.tests
             //     results[i] = model.EvaluateProbability(toRun[i]);
             // }
             var results = model.EvaluateProbabilityCompiled(toRun);
+            timer.Stop();
+            output.WriteLine($"Time taken for {toRun.Length} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
+        }
+
+        private void DoXGBoostEvaluateTimingFlat(XGBoost model, Dictionary<string, float[]> samples)
+        {
+            Random r = new Random(20190524);
+            var toRun = samples.Select(m => m.Value)
+                .Concat(samples.Select(m => m.Value))
+                .OrderBy(m => r.Next())
+                .ToArray();
+
+            var results = new double[toRun.Length];
+            var timer = Stopwatch.StartNew();
+            for(int i = 0; i < toRun.Length; i++)
+            {
+                results[i] = model.EvaluateProbabilityFlat(toRun[i]);
+            }
+            timer.Stop();
+            output.WriteLine($"Time taken for {toRun.Length} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
+        }
+
+        private void DoXGBoostEvaluateTimingFlatShrink(XGBoost model, Dictionary<string, float[]> samples)
+        {
+            Random r = new Random(20190524);
+            var toRun = samples.Select(m => m.Value)
+                .Concat(samples.Select(m => m.Value))
+                .OrderBy(m => r.Next())
+                .ToArray();
+
+            var userFeatures = toRun[0].Take(639).ToArray();
+            var jobFeatures = toRun.Select(m => m.Skip(639).ToArray()).ToArray();
+
+            var results = new float[toRun.Length];
+            var timer = Stopwatch.StartNew();
+            model.EvaluateProbabilityFlatShrink(userFeatures, jobFeatures, results);
             timer.Stop();
             output.WriteLine($"Time taken for {toRun.Length} evaluations: {timer.Elapsed.TotalMilliseconds} ms");
         }
